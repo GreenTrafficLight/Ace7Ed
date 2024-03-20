@@ -5,6 +5,10 @@ VisualStudioVersion = 17.9.34622.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ace7Ed", "Ace7Ed\Ace7Ed.csproj", "{346940C6-C28B-46E6-B435-7184524B65FF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{E70296D2-DEBB-42E3-AAEF-286F09F86397}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ace7LocalizationFormat", "Ace7-Localization-Format\Ace7LocalizationFormat\Ace7LocalizationFormat.csproj", "{5B296A31-55EC-4A71-8915-32A350261E8B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,9 +19,16 @@ Global
 		{346940C6-C28B-46E6-B435-7184524B65FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{346940C6-C28B-46E6-B435-7184524B65FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{346940C6-C28B-46E6-B435-7184524B65FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B296A31-55EC-4A71-8915-32A350261E8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B296A31-55EC-4A71-8915-32A350261E8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B296A31-55EC-4A71-8915-32A350261E8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B296A31-55EC-4A71-8915-32A350261E8B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5B296A31-55EC-4A71-8915-32A350261E8B} = {E70296D2-DEBB-42E3-AAEF-286F09F86397}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0AECF7B1-57F0-4B80-91D0-EFE65C566DB7}
