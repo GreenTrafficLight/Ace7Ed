@@ -9,22 +9,32 @@ namespace Ace7Ed
 {
     internal static class Theme
     {
-        public static Color MainBackColor => Configurations.Default.DarkTheme
-            ? Color.FromArgb(37, 36, 53) : SystemColors.Control;
+        static readonly Color ControlDarkTheme = Color.FromArgb(48, 48, 48);
+        static readonly Color ControlTextDarkTheme = Color.FromArgb(204, 204, 204);
+        static readonly Color WindowDarkTheme = Color.FromArgb(51, 51, 51);
+        static readonly Color WindowTextDarkTheme = Color.FromArgb(204, 204, 204);
 
-        public static Color MainForeColor => Configurations.Default.DarkTheme
-            ? SystemColors.Info : SystemColors.ControlText;
+        public static Color ControlColor => Configurations.Default.DarkTheme
+            ? ControlDarkTheme : SystemColors.Control;
+        public static Color ControlTextColor => Configurations.Default.DarkTheme
+            ? ControlTextDarkTheme : SystemColors.ControlText;
+        public static Color WindowColor => Configurations.Default.DarkTheme
+            ? WindowDarkTheme : SystemColors.Window;
+        public static Color WindowTextColor => Configurations.Default.DarkTheme
+            ? WindowTextDarkTheme : SystemColors.WindowText;
 
-        public static Color ButtonBackColor => Configurations.Default.DarkTheme
-            ? Color.FromArgb(51, 50, 68) : Color.FromArgb(175, 175, 200);
+        public static void SetDarkThemeButton(Button button)
+        {
+            button.BackColor = ControlColor;
+            button.ForeColor = ControlTextColor;
+        }
 
-        public static Color ButtonForeColor => Configurations.Default.DarkTheme
-            ? SystemColors.Info : SystemColors.ControlText;
-
-        public static Color TextBoxBackColor => Configurations.Default.DarkTheme
-            ? Color.FromArgb(60, 65, 72) : Color.FromArgb(180, 180, 200);
-
-        public static Color TextBoxForeColor => Configurations.Default.DarkTheme
-            ? SystemColors.Info : SystemColors.ControlText;
+        public static void SetDarkThemeDataGridView(DataGridView dataGridView)
+        {
+            dataGridView.ColumnHeadersDefaultCellStyle.BackColor = ControlColor;
+            dataGridView.ColumnHeadersDefaultCellStyle.ForeColor = WindowTextColor;
+            dataGridView.DefaultCellStyle.BackColor = WindowColor;
+            dataGridView.DefaultCellStyle.ForeColor = ControlTextColor;
+        }
     }
 }

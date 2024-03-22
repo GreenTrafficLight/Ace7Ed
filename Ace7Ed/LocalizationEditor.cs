@@ -1,7 +1,7 @@
 using Ace7Ed.Properties;
+using Ace7Ed.Prompt;
 using Ace7LocalizationFormat.Formats;
 using System.ComponentModel;
-using System.Configuration;
 using System.Windows.Forms;
 using static Ace7LocalizationFormat.Formats.CMN;
 
@@ -9,88 +9,100 @@ namespace Ace7Ed
 {
     public partial class LocalizationEditor : Form
     {
-        private CMN _Cmn { get; set; }
-        private List<DAT> _Dats { get; set; }
-        public LocalizationEditor(CMN cmn, List<DAT> dats)
+        private (CMN, List<DAT>) _gameLocalization { get; set; }
+        private (CMN, List<DAT>) _modifiedLocalization { get; set; }
+
+        private int _selectedRowIndex = -1;
+        private int _selectedColumnIndex = -1;
+        public LocalizationEditor((CMN, List<DAT>) gameLocalization, (CMN, List<DAT>) modifiedLocalization)
         {
             InitializeComponent();
             ToggleDarkTheme();
 
-            _Cmn = cmn;
-            _Dats = dats;
+            _gameLocalization = gameLocalization;
+            _modifiedLocalization = modifiedLocalization;
 
-            LoadLocalizationEditorDatLanguageComboBox();
-            LoadEditorLocalizationTreeView();
-
-            LocalizationEditorDataGridView.Columns.Clear();
-            LocalizationEditorDataGridView.Columns.Add("designNumber", "Number");
-            LocalizationEditorDataGridView.Columns[0].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            LocalizationEditorDataGridView.Columns[0].ReadOnly = true;
-            LocalizationEditorDataGridView.Columns.Add("designID", "ID");
-            LocalizationEditorDataGridView.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            LocalizationEditorDataGridView.Columns[1].ReadOnly = true;
-            LocalizationEditorDataGridView.Columns.Add("designText", "Text");
-            LocalizationEditorDataGridView.Columns[2].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            LocalizationEditorDataGridView.Columns[2].ReadOnly = true;
-
-            LocalizationEditorDataGridView.Sort(LocalizationEditorDataGridView.Columns[0], ListSortDirection.Ascending);
+            LoadDatLanguageComboBox();
+            LoadCmnTreeView();
         }
 
         private void ToggleDarkTheme()
         {
-            BackColor = Theme.MainBackColor;
-            ForeColor = Theme.MainForeColor;
+            BackColor = Theme.ControlColor;
+            ForeColor = Theme.ControlTextColor;
+
+            DatLanguageComboBox.BackColor = Theme.WindowColor;
+            DatLanguageComboBox.ForeColor = Theme.WindowTextColor;
+
+            CmnTreeView.BackColor = Theme.WindowColor;
+            CmnTreeView.ForeColor = Theme.WindowTextColor;
+
+            Theme.SetDarkThemeDataGridView(DatsDataGridView);
         }
 
-        private void LoadLocalizationEditorDatLanguageComboBox()
+        private void LoadDatLanguageComboBox()
         {
-            LocalizationEditorDatLanguageComboBox.BeginUpdate();
+            DatLanguageComboBox.BeginUpdate();
 
-            LocalizationEditorDatLanguageComboBox.Items.Clear();
-            foreach (DAT dat in _Dats)
+            DatLanguageComboBox.Items.Clear();
+            foreach (DAT dat in _modifiedLocalization.Item2)
             {
-                LocalizationEditorDatLanguageComboBox.Items.Add(dat.Letter);
+                DatLanguageComboBox.Items.Add(dat.Letter);
             }
 
-            LocalizationEditorDatLanguageComboBox.EndUpdate();
+            DatLanguageComboBox.EndUpdate();
         }
 
-        private void LoadEditorLocalizationTreeView()
+        private void LoadCmnTreeView()
         {
-            LocalizationEditorCmnTreeView.BeginUpdate();
+            CmnTreeView.BeginUpdate();
 
-            LocalizationEditorCmnTreeView.Nodes.Clear();
+            CmnTreeView.Nodes.Clear();
 
-            foreach (var node in _Cmn.Root)
+            foreach (var node in _modifiedLocalization.Item1.Root)
             {
-                LocalizationEditorCmnTreeView.Nodes.Add(GetTreeNodeFromCmn(node));
+                CmnTreeView.Nodes.Add(GetTreeNodeFromCmn(node));
             }
 
-            LocalizationEditorCmnTreeView.EndUpdate();
+            CmnTreeView.EndUpdate();
         }
 
-        private void LoadLocalizationEditorDataGridView()
+        private void LoadDatsDataGridView()
         {
-            if (LocalizationEditorDatLanguageComboBox.SelectedItem != null)
+            DatsDataGridView.Columns.Clear();
+            DatsDataGridView.Columns.Add("designNumber", "Number");
+            DatsDataGridView.Columns[0].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            DatsDataGridView.Columns[0].ReadOnly = true;
+            DatsDataGridView.Columns.Add("designID", "ID");
+            DatsDataGridView.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            DatsDataGridView.Columns[1].ReadOnly = true;
+            DatsDataGridView.Columns.Add("designText", "Text");
+            DatsDataGridView.Columns[2].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            DatsDataGridView.Columns[2].ReadOnly = true;
+
+            DatsDataGridView.Sort(DatsDataGridView.Columns[0], ListSortDirection.Ascending);
+
+            if (DatLanguageComboBox.SelectedItem != null)
             {
-                LocalizationEditorDataGridView.Rows.Clear();
-                char datLetter = (char)LocalizationEditorDatLanguageComboBox.SelectedItem;
-                DAT dat = _Dats[datLetter - 65];
-                if (LocalizationEditorCmnTreeView.SelectedNode is TreeNode treeNode)
+                DatsDataGridView.Rows.Clear();
+                char datLetter = (char)DatLanguageComboBox.SelectedItem;
+                DAT dat = _modifiedLocalization.Item2[datLetter - 65];
+                if (CmnTreeView.SelectedNode is TreeNode treeNode)
                 {
                     AddCmnNodeToDataGridView(dat, (CMNString)treeNode.Tag);
                 }
-                else if (LocalizationEditorCmnTreeView.SelectedNode == null)
+                else if (CmnTreeView.SelectedNode == null)
                 {
-                    foreach (var node in _Cmn.Root)
+                    foreach (var node in _modifiedLocalization.Item1.Root)
                     {
                         AddCmnNodeToDataGridView(dat, node.Value);
                     }
                 }
-
-
             }
+
+            DatsDataGridView.ClearSelection();
         }
+
         public static TreeNode GetTreeNodeFromCmn(KeyValuePair<string, CMNString> child)
         {
             var result = new TreeNode();
@@ -106,12 +118,12 @@ namespace Ace7Ed
             return result;
         }
 
-        public void AddCmnNodeToDataGridView(DAT dat, CMNString child)
+        private void AddCmnNodeToDataGridView(DAT dat, CMNString child)
         {
             if (child.StringNumber != -1)
             {
                 string text = dat.Strings[child.StringNumber];
-                LocalizationEditorDataGridView.Rows.Add(child.StringNumber, child.FullName, text);
+                DatsDataGridView.Rows.Add(child.StringNumber, child.FullName, text);
             }
 
             foreach (var children in child.childrens)
@@ -127,14 +139,145 @@ namespace Ace7Ed
             ToggleDarkTheme();
         }
 
-        private void LocalizationEditorDatLanguageComboBox_SelectedValueChanged(object sender, EventArgs e)
+        private void DatLanguageComboBox_SelectedValueChanged(object sender, EventArgs e)
         {
-            LoadLocalizationEditorDataGridView();
+            LoadDatsDataGridView();
         }
 
-        private void LocalizationEditorCmnTreeView_AfterSelect(object sender, TreeViewEventArgs e)
+        private void CmnTreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            LoadLocalizationEditorDataGridView();
+            LoadDatsDataGridView();
+        }
+
+        private void DatsDataGridView_SelectionChanged(object sender, EventArgs e)
+        {
+            // Limit user to multiselect in columns and in only one
+            switch (DatsDataGridView.SelectedCells.Count)
+            {
+                case 0:
+                    _selectedRowIndex = -1;
+                    _selectedColumnIndex = -1;
+                    return;
+                case 1:
+                    _selectedRowIndex = DatsDataGridView.SelectedCells[0].RowIndex;
+                    _selectedColumnIndex = DatsDataGridView.SelectedCells[0].ColumnIndex;
+                    // Disable the number column for selection
+                    if (_selectedColumnIndex == 0)
+                    {
+                        foreach (DataGridViewCell cell in DatsDataGridView.SelectedCells)
+                        {
+                            cell.Selected = false;
+                        }
+                    }
+                    return;
+            }
+
+            foreach (DataGridViewCell cell in DatsDataGridView.SelectedCells)
+            {
+                if (cell.ColumnIndex == _selectedColumnIndex)
+                {
+                    if (cell.RowIndex != _selectedRowIndex)
+                    {
+                        _selectedRowIndex = -1;
+                    }
+                }
+                else
+                {
+                    cell.Selected = false;
+                }
+            }
+        }
+
+        private void DatsDataGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex == 2)
+            {
+                string datText = DatsDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
+
+                using (var datStringEditor = new DatStringEditor(datText) { StartPosition = FormStartPosition.CenterScreen })
+                {
+                    datStringEditor.ShowDialog();
+                    if (datStringEditor.DialogResult == DialogResult.OK)
+                    {
+                        DatsDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = datStringEditor.DatText;
+                    }
+                    datStringEditor.Dispose();
+                }
+            }
+        }
+
+        private void CmnTreeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                CmnTreeView.SelectedNode = e.Node;
+
+                if (CmnTreeView.SelectedNode is TreeNode cmnTreeNode)
+                {
+                    ContextMenuStrip contextMenu = new ContextMenuStrip();
+
+                    ToolStripMenuItem newMenuItem = new ToolStripMenuItem("New");
+                    newMenuItem.Click += new EventHandler(NewMenuItem_Click);
+                    newMenuItem.Name = "New";
+                    contextMenu.Items.Add(newMenuItem);
+
+                    contextMenu.Show(CmnTreeView, CmnTreeView.PointToClient(Cursor.Position));
+                }
+            }
+        }
+
+        private void DatsDataGridView_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right && DatsDataGridView.SelectedCells.Count > 0)
+            {
+                ContextMenuStrip contextMenu = new ContextMenuStrip();
+
+                ToolStripMenuItem copyMenuItem = new ToolStripMenuItem("Copy");
+                copyMenuItem.Name = "Copy";
+                contextMenu.Items.Add(copyMenuItem);
+
+                ToolStripMenuItem pasteMenuItem = new ToolStripMenuItem("Paste");
+                pasteMenuItem.Name = "Paste";
+                pasteMenuItem.Enabled = false;
+                contextMenu.Items.Add(pasteMenuItem);
+
+                if (DatsDataGridView.SelectedCells[0].ColumnIndex == 1)
+                {
+                    ToolStripMenuItem copyPasteToLanguagesMenuItem = new ToolStripMenuItem("Copy Paste to languages");
+                    copyPasteToLanguagesMenuItem.Click += new EventHandler(CopyPasteToLanguagesMenuItem_Click);
+                    copyPasteToLanguagesMenuItem.Name = "CopyPasteToLanguages";
+                    contextMenu.Items.Add(copyPasteToLanguagesMenuItem);
+                }
+
+                contextMenu.Show(DatsDataGridView, DatsDataGridView.PointToClient(Cursor.Position));
+            }
+        }
+
+        private void NewMenuItem_Click(object sender, EventArgs e)
+        {
+            TreeNode treeNode = CmnTreeView.SelectedNode;
+
+            using (var input = new Input("Enter a name for the new node", treeNode.Text))
+            {
+                input.ShowDialog();
+
+                input.Dispose();
+            }
+        }
+
+        private void CopyPasteToLanguagesMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var copyPasteLanguagesSelector = new CopyPasteLanguagesSelector(_modifiedLocalization.Item2, (char)DatLanguageComboBox.SelectedItem))
+            {
+                copyPasteLanguagesSelector.ShowDialog();
+
+                copyPasteLanguagesSelector.Dispose();
+            }
+        }
+
+        private void MSMainOpenFolder_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
