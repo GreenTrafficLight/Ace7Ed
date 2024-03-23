@@ -13,6 +13,7 @@ namespace Ace7Ed.Prompt
 {
     public partial class CopyPasteLanguagesSelector : Form
     {
+        public List<char> SelectedLanguages = new List<char>();
         public CopyPasteLanguagesSelector(List<DAT> dats, char selectedLanguage)
         {
             InitializeComponent();
@@ -55,6 +56,10 @@ namespace Ace7Ed.Prompt
 
         private void OkButton_Click(object sender, EventArgs e)
         {
+            foreach (DataGridViewCell selectedLanguage in LanguagesDataGridView.SelectedCells)
+            {
+                SelectedLanguages.Add(selectedLanguage.Value.ToString()[0]);
+            }
             DialogResult = DialogResult.OK;
         }
 
