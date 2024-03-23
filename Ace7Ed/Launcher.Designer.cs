@@ -110,6 +110,7 @@
             Controls.Add(LauncherButtonGameDir);
             Controls.Add(LauncherTextBoxGameDir);
             Controls.Add(LauncherLabelGameDir);
+            MaximizeBox = false;
             Name = "Launcher";
             Text = "Form1";
             ResumeLayout(false);

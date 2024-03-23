@@ -4,26 +4,59 @@ using Ace7LocalizationFormat.Formats;
 using System.ComponentModel;
 using System.Windows.Forms;
 using static Ace7LocalizationFormat.Formats.CMN;
+using Ace7Ed.Interact;
 
 namespace Ace7Ed
 {
     public partial class LocalizationEditor : Form
     {
-        private (CMN, List<DAT>) _gameLocalization { get; set; }
-        private (CMN, List<DAT>) _modifiedLocalization { get; set; }
+        private (CMN, List<DAT>) _modifiedLocalization = new(null, null);
+
+        private string _directory { get; set; }
+
+        private (int, int, List<string>) _copyStrings { get; set; }
 
         private int _selectedRowIndex = -1;
         private int _selectedColumnIndex = -1;
-        public LocalizationEditor((CMN, List<DAT>) gameLocalization, (CMN, List<DAT>) modifiedLocalization)
+
+        private int _selectedDatIndex
+        {
+            get
+            {
+                if (DatLanguageComboBox.SelectedItem != null)
+                {
+                    return (char)DatLanguageComboBox.SelectedItem - 65;
+                }
+                return -1;
+
+            }
+        }
+
+        private bool _savedChanges = true;
+        public bool SavedChanges
+        {
+            get
+            {
+                return _savedChanges;
+            }
+            set
+            {
+                _savedChanges = value;
+                if (_savedChanges)
+                {
+                    Text = Text.Substring(0, Text.Length - 1); // Remove the "*"
+                }
+                else
+                {
+                    Text += "*";
+                }
+            }
+        }
+
+        public LocalizationEditor()
         {
             InitializeComponent();
             ToggleDarkTheme();
-
-            _gameLocalization = gameLocalization;
-            _modifiedLocalization = modifiedLocalization;
-
-            LoadDatLanguageComboBox();
-            LoadCmnTreeView();
         }
 
         private void ToggleDarkTheme()
@@ -31,8 +64,7 @@ namespace Ace7Ed
             BackColor = Theme.ControlColor;
             ForeColor = Theme.ControlTextColor;
 
-            DatLanguageComboBox.BackColor = Theme.WindowColor;
-            DatLanguageComboBox.ForeColor = Theme.WindowTextColor;
+            Theme.SetDarkThemeComboBox(DatLanguageComboBox);
 
             CmnTreeView.BackColor = Theme.WindowColor;
             CmnTreeView.ForeColor = Theme.WindowTextColor;
@@ -40,15 +72,15 @@ namespace Ace7Ed
             Theme.SetDarkThemeDataGridView(DatsDataGridView);
         }
 
+        #region Loading
+
         private void LoadDatLanguageComboBox()
         {
             DatLanguageComboBox.BeginUpdate();
 
             DatLanguageComboBox.Items.Clear();
-            foreach (DAT dat in _modifiedLocalization.Item2)
-            {
-                DatLanguageComboBox.Items.Add(dat.Letter);
-            }
+            
+            _modifiedLocalization.Item2.ForEach(dat => DatLanguageComboBox.Items.Add(dat.Letter));
 
             DatLanguageComboBox.EndUpdate();
         }
@@ -85,11 +117,10 @@ namespace Ace7Ed
             if (DatLanguageComboBox.SelectedItem != null)
             {
                 DatsDataGridView.Rows.Clear();
-                char datLetter = (char)DatLanguageComboBox.SelectedItem;
-                DAT dat = _modifiedLocalization.Item2[datLetter - 65];
+                DAT dat = _modifiedLocalization.Item2[_selectedDatIndex];
                 if (CmnTreeView.SelectedNode is TreeNode treeNode)
                 {
-                    AddCmnNodeToDataGridView(dat, (CMNString)treeNode.Tag);
+                    AddCmnNodeToDataGridView(dat, (CmnString)treeNode.Tag);
                 }
                 else if (CmnTreeView.SelectedNode == null)
                 {
@@ -103,7 +134,35 @@ namespace Ace7Ed
             DatsDataGridView.ClearSelection();
         }
 
-        public static TreeNode GetTreeNodeFromCmn(KeyValuePair<string, CMNString> child)
+        #endregion
+
+        #region Manage Controls
+        public (CMN, List<DAT>) LoadLocalization(string[] files)
+        {
+            CMN modifiedCmn = null;
+            List<DAT> modifiedDats = new List<DAT>();
+
+            foreach (string filePath in files)
+            {
+                if (Path.GetFileNameWithoutExtension(filePath).Equals("Cmn", StringComparison.OrdinalIgnoreCase))
+                {
+                    modifiedCmn = new CMN(filePath);
+                }
+                else if (Constants.DatLetters.Contains(Path.GetFileNameWithoutExtension(filePath)[0]))
+                {
+                    modifiedDats.Add(new DAT(filePath, Path.GetFileNameWithoutExtension(filePath)[0]));
+                }
+            }
+
+            if (modifiedCmn == null && modifiedDats.Count != 13)
+            {
+                throw new Exception("Missing Dats");
+            }
+
+            return (modifiedCmn, modifiedDats);
+        }
+        
+        public static TreeNode GetTreeNodeFromCmn(KeyValuePair<string, CmnString> child)
         {
             var result = new TreeNode();
             result.Name = child.Key;
@@ -118,7 +177,7 @@ namespace Ace7Ed
             return result;
         }
 
-        private void AddCmnNodeToDataGridView(DAT dat, CMNString child)
+        private void AddCmnNodeToDataGridView(DAT dat, CmnString child)
         {
             if (child.StringNumber != -1)
             {
@@ -132,22 +191,124 @@ namespace Ace7Ed
             }
         }
 
-        private void LEMSToggleDarkTheme_Click(object sender, EventArgs e)
+        #endregion
+
+        #region Menu Strip Controls
+
+        private void MSOptionBatchCopyLanguage_Click(object sender, EventArgs e)
+        {
+            using (var batchCopyLanguage = new BatchCopyLanguage(_modifiedLocalization.Item2))
+            {
+                batchCopyLanguage.ShowDialog();
+                if (batchCopyLanguage.DialogResult == DialogResult.OK && batchCopyLanguage.SelectedCopyLanguage != -1)
+                {
+                    foreach(var pasteLanguageLetter in  batchCopyLanguage.SelectedPasteLanguages)
+                    {
+                        for (int i = 0; i < _modifiedLocalization.Item2[batchCopyLanguage.SelectedCopyLanguage].Strings.Count; i++)
+                        {
+                            if (_modifiedLocalization.Item2[pasteLanguageLetter - 65].Strings[i] == "\0" || batchCopyLanguage.OverwriteExistingString == true)
+                            {
+                                _modifiedLocalization.Item2[pasteLanguageLetter - 65].Strings[i] = _modifiedLocalization.Item2[batchCopyLanguage.SelectedCopyLanguage].Strings[i];
+                            }
+                        }
+                    }
+                }
+                batchCopyLanguage.Dispose();
+            }
+            LoadDatsDataGridView();
+        }
+        private void MSOptionsToggleDarkTheme_Click(object sender, EventArgs e)
         {
             Configurations.Default.DarkTheme = !Configurations.Default.DarkTheme;
             Configurations.Default.Save();
             ToggleDarkTheme();
         }
 
-        private void DatLanguageComboBox_SelectedValueChanged(object sender, EventArgs e)
+        private void MSMainOpenFolder_Click(object sender, EventArgs e)
         {
-            LoadDatsDataGridView();
+            using FolderBrowserDialog folderBrowser = new FolderBrowserDialog()
+            {
+                Description = "Select DATs directory",
+                RootFolder = Environment.SpecialFolder.MyComputer,
+            };
+
+            if (folderBrowser.ShowDialog() == DialogResult.OK)
+            {
+                string[] files = Directory.GetFiles(folderBrowser.SelectedPath);
+
+                _modifiedLocalization = LoadLocalization(files);
+
+                // Check if each dat string count has the same number as the CMN max string number
+                foreach (var dat in _modifiedLocalization.Item2)
+                {
+                    // Add null string for missing strings so the dat can be loaded
+                    if (dat.Strings.Count < _modifiedLocalization.Item1.MaxStringNumber)
+                    {
+                        dat.Strings.AddRange(Enumerable.Repeat("\0", _modifiedLocalization.Item1.MaxStringNumber + 1 - dat.Strings.Count));
+                    }
+                }
+
+                _directory = folderBrowser.SelectedPath;
+
+                LoadDatLanguageComboBox();
+                LoadCmnTreeView();
+
+                MSOptionBatchCopyLanguage.Enabled = true;
+            }
+        }
+
+        private void MSMainSave_Click(object sender, EventArgs e)
+        {
+            if (_modifiedLocalization.Item1 != null)
+            {
+                string cmnFilePath = _directory + "\\Cmn.dat";
+                if (File.Exists(cmnFilePath))
+                    File.Copy(cmnFilePath, cmnFilePath + ".bak", true);
+
+                _modifiedLocalization.Item1.Write(cmnFilePath);
+            }
+
+            foreach (var dat in _modifiedLocalization.Item2)
+            {
+                string datFilePath = _directory + "\\" + dat.Letter + ".dat";
+
+                if (File.Exists(datFilePath))
+                    File.Copy(datFilePath, datFilePath + ".bak", true);
+
+                dat.Write(datFilePath, dat.Letter);
+            }
+        }
+
+        #endregion
+
+        #region Tree View Controls
+
+        private void CmnTreeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                CmnTreeView.SelectedNode = e.Node;
+
+                if (CmnTreeView.SelectedNode is TreeNode cmnTreeNode)
+                {
+                    ContextMenuStrip contextMenu = new ContextMenuStrip();
+
+                    ToolStripMenuItem newMenuItem = Utils.CreateToolStripMenuItem("New", "New", new EventHandler(NewMenuItem_Click), _modifiedLocalization.Item2 == null ? false : true);
+                    contextMenu.Items.Add(newMenuItem);
+
+                    contextMenu.Show(CmnTreeView, CmnTreeView.PointToClient(Cursor.Position));
+                }
+            }
         }
 
         private void CmnTreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
             LoadDatsDataGridView();
         }
+
+        #endregion
+
+        #region Data Grid View Controls
 
         private void DatsDataGridView_SelectionChanged(object sender, EventArgs e)
         {
@@ -188,64 +349,21 @@ namespace Ace7Ed
             }
         }
 
-        private void DatsDataGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.ColumnIndex == 2)
-            {
-                string datText = DatsDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
-
-                using (var datStringEditor = new DatStringEditor(datText) { StartPosition = FormStartPosition.CenterScreen })
-                {
-                    datStringEditor.ShowDialog();
-                    if (datStringEditor.DialogResult == DialogResult.OK)
-                    {
-                        DatsDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = datStringEditor.DatText;
-                    }
-                    datStringEditor.Dispose();
-                }
-            }
-        }
-
-        private void CmnTreeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                CmnTreeView.SelectedNode = e.Node;
-
-                if (CmnTreeView.SelectedNode is TreeNode cmnTreeNode)
-                {
-                    ContextMenuStrip contextMenu = new ContextMenuStrip();
-
-                    ToolStripMenuItem newMenuItem = new ToolStripMenuItem("New");
-                    newMenuItem.Click += new EventHandler(NewMenuItem_Click);
-                    newMenuItem.Name = "New";
-                    contextMenu.Items.Add(newMenuItem);
-
-                    contextMenu.Show(CmnTreeView, CmnTreeView.PointToClient(Cursor.Position));
-                }
-            }
-        }
-
         private void DatsDataGridView_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Right && DatsDataGridView.SelectedCells.Count > 0)
+            if (e.Button == MouseButtons.Right && e.ColumnIndex == 1)
             {
                 ContextMenuStrip contextMenu = new ContextMenuStrip();
 
-                ToolStripMenuItem copyMenuItem = new ToolStripMenuItem("Copy");
-                copyMenuItem.Name = "Copy";
+                ToolStripMenuItem copyMenuItem = Utils.CreateToolStripMenuItem("Copy", "Copy", new EventHandler(CopyMenuItem_Click), DatsDataGridView.SelectedCells.Count == 0 ? false : true);
                 contextMenu.Items.Add(copyMenuItem);
 
-                ToolStripMenuItem pasteMenuItem = new ToolStripMenuItem("Paste");
-                pasteMenuItem.Name = "Paste";
-                pasteMenuItem.Enabled = false;
+                ToolStripMenuItem pasteMenuItem = Utils.CreateToolStripMenuItem("Paste", "Paste", new EventHandler(PasteMenuItem_Click), _copyStrings.Item3 == null ? false : true);
                 contextMenu.Items.Add(pasteMenuItem);
 
-                if (DatsDataGridView.SelectedCells[0].ColumnIndex == 1)
+                if (e.ColumnIndex == 1)
                 {
-                    ToolStripMenuItem copyPasteToLanguagesMenuItem = new ToolStripMenuItem("Copy Paste to languages");
-                    copyPasteToLanguagesMenuItem.Click += new EventHandler(CopyPasteToLanguagesMenuItem_Click);
-                    copyPasteToLanguagesMenuItem.Name = "CopyPasteToLanguages";
+                    ToolStripMenuItem copyPasteToLanguagesMenuItem = Utils.CreateToolStripMenuItem("Copy Paste to languages", "CopyPasteToLanguages", new EventHandler(CopyPasteToLanguagesMenuItem_Click), DatsDataGridView.SelectedCells.Count == 0 ? false : true);
                     contextMenu.Items.Add(copyPasteToLanguagesMenuItem);
                 }
 
@@ -253,31 +371,133 @@ namespace Ace7Ed
             }
         }
 
+        private void DatsDataGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex == 2)
+            {
+                string datText = DatsDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
+                int stringNumber = Convert.ToInt32(DatsDataGridView.Rows[e.RowIndex].Cells[0].Value);
+
+                using (var datStringEditor = new DatStringEditor(datText) { StartPosition = FormStartPosition.CenterScreen })
+                {
+                    datStringEditor.ShowDialog();
+                    if (datStringEditor.DialogResult == DialogResult.OK)
+                    {
+                        _modifiedLocalization.Item2[_selectedDatIndex].Strings[stringNumber] = datStringEditor.DatText;
+                        LoadDatsDataGridView();
+                    }
+                    datStringEditor.Dispose();
+                }
+            }
+        }
+
+        #endregion
+
+        #region Combo Box Controls
+        private void DatLanguageComboBox_SelectedValueChanged(object sender, EventArgs e)
+        {
+            LoadDatsDataGridView();
+        }
+
+        #endregion
+
+        #region Menu Items
+
         private void NewMenuItem_Click(object sender, EventArgs e)
         {
             TreeNode treeNode = CmnTreeView.SelectedNode;
+            int treeNodeIndex = treeNode.Index;
 
-            using (var input = new Input("Enter a name for the new node", treeNode.Text))
+            TreeNode treeNodeParent = treeNode.Parent;
+
+            using (var input = new Input("Enter a name for the new node", treeNode.Text) { StartPosition = FormStartPosition.CenterScreen })
             {
                 input.ShowDialog();
+
+                if (input.DialogResult == DialogResult.OK)
+                {
+                    KeyValuePair<string, CmnString> selectedCmnNode = new KeyValuePair<string, CmnString>(treeNode.Name, (CmnString)treeNode.Tag);
+                    if (_modifiedLocalization.Item1.AddVariable(input.InputText, selectedCmnNode))
+                    {
+                        // Add the new string variable to each dat
+                        foreach (var dat in _modifiedLocalization.Item2)
+                        {
+                            dat.Strings.Add("\0");
+                        }
+
+                        // Remove the treeNode because we need to update it
+                        treeNode.Remove();
+
+                        // Re-insert the node after updating it
+                        TreeNode reInsertTreeNode = GetTreeNodeFromCmn(selectedCmnNode); // Create the new treeNode and its childrens
+                        treeNodeParent.Nodes.Insert(treeNodeIndex, reInsertTreeNode); // Re-insert the tree node in the right place
+
+                        CmnTreeView.SelectedNode = reInsertTreeNode;
+                        CmnTreeView.SelectedNode.Expand();
+                    }
+                    else
+                    {
+                        // Show Message Box
+                    }
+                }
 
                 input.Dispose();
             }
         }
 
+        private void CopyMenuItem_Click(object sender, EventArgs e)
+        {
+            int columnIndex = -1;
+            List<string> copyStrings = new List<string>();
+
+            foreach (DataGridViewCell selectedCell in DatsDataGridView.SelectedCells)
+            {
+                columnIndex = selectedCell.ColumnIndex;
+                copyStrings.Add(selectedCell.Value.ToString());
+            }
+
+            _copyStrings = (columnIndex, _selectedDatIndex ,copyStrings);
+        }
+
+        private void PasteMenuItem_Click(object sender, EventArgs e)
+        {
+            if (_copyStrings.Item1 == 1)
+            {
+                foreach (var copyString in _copyStrings.Item3)
+                {
+                    int variableStringNumber = _modifiedLocalization.Item1.GetVariableStringNumber(copyString);
+                    _modifiedLocalization.Item2[_selectedDatIndex].Strings[variableStringNumber] = _modifiedLocalization.Item2[_copyStrings.Item2].Strings[variableStringNumber];  
+                }
+            }
+            LoadDatsDataGridView();
+        }
+
         private void CopyPasteToLanguagesMenuItem_Click(object sender, EventArgs e)
         {
-            using (var copyPasteLanguagesSelector = new CopyPasteLanguagesSelector(_modifiedLocalization.Item2, (char)DatLanguageComboBox.SelectedItem))
+            using (var copyPasteLanguagesSelector = new CopyPasteLanguagesSelector(_modifiedLocalization.Item2, (char)DatLanguageComboBox.SelectedItem) { StartPosition = FormStartPosition.CenterScreen })
             {
                 copyPasteLanguagesSelector.ShowDialog();
+
+                // For each string variable selected
+                foreach (DataGridViewCell stringVariable in DatsDataGridView.SelectedCells)
+                {
+                    int variableStringNumber = _modifiedLocalization.Item1.GetVariableStringNumber(stringVariable.Value.ToString());
+                    if (variableStringNumber != -1)
+                    {
+                        // Paste to dats selected
+                        foreach (char datLetter in copyPasteLanguagesSelector.SelectedLanguages)
+                        {
+                            _modifiedLocalization.Item2[datLetter - 65].Strings[variableStringNumber] = _modifiedLocalization.Item2[_selectedDatIndex].Strings[variableStringNumber];
+                        }
+                    }
+                }
 
                 copyPasteLanguagesSelector.Dispose();
             }
         }
 
-        private void MSMainOpenFolder_Click(object sender, EventArgs e)
-        {
+        #endregion
 
-        }
+
     }
 }

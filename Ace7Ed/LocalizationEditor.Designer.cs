@@ -30,14 +30,15 @@
         {
             LocalizationEditorMenuStrip = new MenuStrip();
             MenuStripMain = new ToolStripMenuItem();
+            MSMainOpenFolder = new ToolStripMenuItem();
+            MSMainSave = new ToolStripMenuItem();
             MenuStripOptions = new ToolStripMenuItem();
+            MSOptionBatchCopyLanguage = new ToolStripMenuItem();
             MSOptionsToggleDarkTheme = new ToolStripMenuItem();
             CmnTreeView = new TreeView();
             DatsDataGridView = new DataGridView();
             DatLanguageComboBox = new ComboBox();
             SelectedLanguageLabel = new Label();
-            MSMainOpenFolder = new ToolStripMenuItem();
-            MSMainSave = new ToolStripMenuItem();
             LocalizationEditorMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)DatsDataGridView).BeginInit();
             SuspendLayout();
@@ -58,26 +59,50 @@
             MenuStripMain.Size = new Size(46, 20);
             MenuStripMain.Text = "Main";
             // 
+            // MSMainOpenFolder
+            // 
+            MSMainOpenFolder.Name = "MSMainOpenFolder";
+            MSMainOpenFolder.Size = new Size(139, 22);
+            MSMainOpenFolder.Text = "Open Folder";
+            MSMainOpenFolder.Click += MSMainOpenFolder_Click;
+            // 
+            // MSMainSave
+            // 
+            MSMainSave.Name = "MSMainSave";
+            MSMainSave.ShortcutKeyDisplayString = "";
+            MSMainSave.Size = new Size(139, 22);
+            MSMainSave.Text = "Save";
+            MSMainSave.Click += MSMainSave_Click;
+            // 
             // MenuStripOptions
             // 
-            MenuStripOptions.DropDownItems.AddRange(new ToolStripItem[] { MSOptionsToggleDarkTheme });
+            MenuStripOptions.DropDownItems.AddRange(new ToolStripItem[] { MSOptionBatchCopyLanguage, MSOptionsToggleDarkTheme });
             MenuStripOptions.Name = "MenuStripOptions";
             MenuStripOptions.Size = new Size(61, 20);
             MenuStripOptions.Text = "Options";
             // 
+            // MSOptionBatchCopyLanguage
+            // 
+            MSOptionBatchCopyLanguage.Enabled = false;
+            MSOptionBatchCopyLanguage.Name = "MSOptionBatchCopyLanguage";
+            MSOptionBatchCopyLanguage.Size = new Size(194, 22);
+            MSOptionBatchCopyLanguage.Text = "Batch copy a language";
+            MSOptionBatchCopyLanguage.Click += MSOptionBatchCopyLanguage_Click;
+            // 
             // MSOptionsToggleDarkTheme
             // 
             MSOptionsToggleDarkTheme.Name = "MSOptionsToggleDarkTheme";
-            MSOptionsToggleDarkTheme.Size = new Size(180, 22);
+            MSOptionsToggleDarkTheme.Size = new Size(194, 22);
             MSOptionsToggleDarkTheme.Text = "Toggle Dark Theme";
-            MSOptionsToggleDarkTheme.Click += LEMSToggleDarkTheme_Click;
+            MSOptionsToggleDarkTheme.Click += MSOptionsToggleDarkTheme_Click;
             // 
             // CmnTreeView
             // 
+            CmnTreeView.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
             CmnTreeView.BackColor = SystemColors.Window;
-            CmnTreeView.Location = new Point(12, 30);
+            CmnTreeView.Location = new Point(12, 35);
             CmnTreeView.Name = "CmnTreeView";
-            CmnTreeView.Size = new Size(193, 408);
+            CmnTreeView.Size = new Size(253, 408);
             CmnTreeView.TabIndex = 2;
             CmnTreeView.AfterSelect += CmnTreeView_AfterSelect;
             CmnTreeView.NodeMouseClick += CmnTreeView_NodeMouseClick;
@@ -88,13 +113,14 @@
             DatsDataGridView.AllowUserToDeleteRows = false;
             DatsDataGridView.AllowUserToResizeColumns = false;
             DatsDataGridView.AllowUserToResizeRows = false;
+            DatsDataGridView.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             DatsDataGridView.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
             DatsDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             DatsDataGridView.EnableHeadersVisualStyles = false;
-            DatsDataGridView.Location = new Point(211, 56);
+            DatsDataGridView.Location = new Point(271, 56);
             DatsDataGridView.Name = "DatsDataGridView";
             DatsDataGridView.RowHeadersVisible = false;
-            DatsDataGridView.Size = new Size(577, 382);
+            DatsDataGridView.Size = new Size(517, 387);
             DatsDataGridView.TabIndex = 3;
             DatsDataGridView.CellDoubleClick += DatsDataGridView_CellDoubleClick;
             DatsDataGridView.CellMouseClick += DatsDataGridView_CellMouseClick;
@@ -102,6 +128,8 @@
             // 
             // DatLanguageComboBox
             // 
+            DatLanguageComboBox.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            DatLanguageComboBox.FlatStyle = FlatStyle.Flat;
             DatLanguageComboBox.FormattingEnabled = true;
             DatLanguageComboBox.Location = new Point(667, 27);
             DatLanguageComboBox.Name = "DatLanguageComboBox";
@@ -111,26 +139,13 @@
             // 
             // SelectedLanguageLabel
             // 
+            SelectedLanguageLabel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             SelectedLanguageLabel.AutoSize = true;
             SelectedLanguageLabel.Location = new Point(549, 30);
             SelectedLanguageLabel.Name = "SelectedLanguageLabel";
             SelectedLanguageLabel.Size = new Size(112, 15);
             SelectedLanguageLabel.TabIndex = 6;
             SelectedLanguageLabel.Text = "Selected Language :";
-            // 
-            // MSMainOpenFolder
-            // 
-            MSMainOpenFolder.Name = "MSMainOpenFolder";
-            MSMainOpenFolder.Size = new Size(180, 22);
-            MSMainOpenFolder.Text = "Open Folder";
-            MSMainOpenFolder.Click += MSMainOpenFolder_Click;
-            // 
-            // MSMainSave
-            // 
-            MSMainSave.Name = "MSMainSave";
-            MSMainSave.ShortcutKeyDisplayString = "";
-            MSMainSave.Size = new Size(180, 22);
-            MSMainSave.Text = "Save";
             // 
             // LocalizationEditor
             // 
@@ -144,7 +159,7 @@
             Controls.Add(LocalizationEditorMenuStrip);
             MainMenuStrip = LocalizationEditorMenuStrip;
             Name = "LocalizationEditor";
-            Text = "Form1";
+            Text = "Localization Editor";
             LocalizationEditorMenuStrip.ResumeLayout(false);
             LocalizationEditorMenuStrip.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)DatsDataGridView).EndInit();
@@ -166,5 +181,6 @@
         private Label SelectedLanguageLabel;
         private ToolStripMenuItem MSMainOpenFolder;
         private ToolStripMenuItem MSMainSave;
+        private ToolStripMenuItem MSOptionBatchCopyLanguage;
     }
 }

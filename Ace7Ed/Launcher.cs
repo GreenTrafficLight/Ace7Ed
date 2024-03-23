@@ -79,9 +79,7 @@ namespace Ace7Ed
             Configurations.Default.GamePath = LauncherTextBoxGameDir.Text;
             Configurations.Default.Save();
 
-            char[] datLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M'];
-
-            (CMN, List<DAT>) gameLocalization = LoadGameLocalization(datLetters);
+            (CMN, List<DAT>) gameLocalization = LoadGameLocalization(Constants.DatLetters);
 
             string modifiedDatsDirectory = LauncherTextBoxDatsDir.Text;
 
@@ -96,7 +94,7 @@ namespace Ace7Ed
                 {
                     modifiedCmn = new CMN(filePath);
                 }
-                else if (datLetters.Contains(Path.GetFileNameWithoutExtension(filePath)[0]))
+                else if (Constants.DatLetters.Contains(Path.GetFileNameWithoutExtension(filePath)[0]))
                 {
                     modifiedDats.Add(new DAT(filePath, Path.GetFileNameWithoutExtension(filePath)[0]));
                 }
@@ -111,7 +109,7 @@ namespace Ace7Ed
 
             Hide();
 
-            using (var localizationEditor = new LocalizationEditor(gameLocalization, modifiedLocalization) { StartPosition = FormStartPosition.CenterScreen })
+            using (var localizationEditor = new LocalizationEditor() { StartPosition = FormStartPosition.CenterScreen })
             {
                 localizationEditor.ShowDialog();
             }
