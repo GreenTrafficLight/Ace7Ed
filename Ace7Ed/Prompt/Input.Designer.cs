@@ -28,55 +28,57 @@
         /// </summary>
         private void InitializeComponent()
         {
-            InputCustomTextLabel = new Label();
-            InputTextBox = new TextBox();
-            InputOkButton = new Button();
-            InputExistingStringLabel = new Label();
+            CustomTextLabel = new Label();
+            TextBox = new TextBox();
+            OkButton = new Button();
+            ExistingStringLabel = new Label();
             SuspendLayout();
             // 
-            // InputCustomTextLabel
+            // CustomTextLabel
             // 
-            InputCustomTextLabel.AutoSize = true;
-            InputCustomTextLabel.Location = new Point(12, 9);
-            InputCustomTextLabel.Name = "InputCustomTextLabel";
-            InputCustomTextLabel.Size = new Size(73, 15);
-            InputCustomTextLabel.TabIndex = 0;
-            InputCustomTextLabel.Text = "Custom Text";
+            CustomTextLabel.AutoSize = true;
+            CustomTextLabel.Location = new Point(12, 9);
+            CustomTextLabel.Name = "CustomTextLabel";
+            CustomTextLabel.Size = new Size(73, 15);
+            CustomTextLabel.TabIndex = 0;
+            CustomTextLabel.Text = "Custom Text";
             // 
-            // InputTextBox
+            // TextBox
             // 
-            InputTextBox.Location = new Point(12, 27);
-            InputTextBox.Name = "InputTextBox";
-            InputTextBox.Size = new Size(320, 23);
-            InputTextBox.TabIndex = 1;
+            TextBox.Location = new Point(12, 32);
+            TextBox.Name = "TextBox";
+            TextBox.Size = new Size(320, 23);
+            TextBox.TabIndex = 1;
             // 
-            // InputOkButton
+            // OkButton
             // 
-            InputOkButton.Location = new Point(267, 56);
-            InputOkButton.Name = "InputOkButton";
-            InputOkButton.Size = new Size(65, 23);
-            InputOkButton.TabIndex = 2;
-            InputOkButton.Text = "OK";
-            InputOkButton.UseVisualStyleBackColor = true;
+            OkButton.FlatStyle = FlatStyle.Flat;
+            OkButton.Location = new Point(267, 61);
+            OkButton.Name = "OkButton";
+            OkButton.Size = new Size(65, 23);
+            OkButton.TabIndex = 2;
+            OkButton.Text = "OK";
+            OkButton.UseVisualStyleBackColor = true;
+            OkButton.Click += OkButton_Click;
             // 
-            // InputExistingStringLabel
+            // ExistingStringLabel
             // 
-            InputExistingStringLabel.Location = new Point(12, 27);
-            InputExistingStringLabel.Name = "InputExistingStringLabel";
-            InputExistingStringLabel.Size = new Size(83, 23);
-            InputExistingStringLabel.TabIndex = 3;
-            InputExistingStringLabel.Text = "Existing String";
-            InputExistingStringLabel.TextAlign = ContentAlignment.MiddleLeft;
+            ExistingStringLabel.Location = new Point(12, 32);
+            ExistingStringLabel.Name = "ExistingStringLabel";
+            ExistingStringLabel.Size = new Size(83, 23);
+            ExistingStringLabel.TabIndex = 3;
+            ExistingStringLabel.Text = "Existing String";
+            ExistingStringLabel.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // Input
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(344, 86);
-            Controls.Add(InputExistingStringLabel);
-            Controls.Add(InputOkButton);
-            Controls.Add(InputTextBox);
-            Controls.Add(InputCustomTextLabel);
+            ClientSize = new Size(344, 96);
+            Controls.Add(ExistingStringLabel);
+            Controls.Add(OkButton);
+            Controls.Add(TextBox);
+            Controls.Add(CustomTextLabel);
             MaximizeBox = false;
             Name = "Input";
             Text = "Input";
@@ -86,9 +88,9 @@
 
         #endregion
 
-        private Label InputCustomTextLabel;
-        private TextBox InputTextBox;
-        private Button InputOkButton;
-        private Label InputExistingStringLabel;
+        private Label CustomTextLabel;
+        private TextBox TextBox;
+        private Button OkButton;
+        private Label ExistingStringLabel;
     }
 }

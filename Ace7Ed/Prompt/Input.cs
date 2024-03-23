@@ -13,19 +13,23 @@ namespace Ace7Ed.Prompt
 {
     public partial class Input : Form
     {
+        public string InputText
+        {
+            get { return TextBox.Text; }
+            set { TextBox.Text = value.ToString(); }
+        }
         public Input(string labelText, string existingString = "")
         {
             InitializeComponent();
             ToggleDarkTheme();
 
 
-            InputExistingStringLabel.Text = existingString;
-            Size s = TextRenderer.MeasureText(existingString, InputExistingStringLabel.Font);
-            InputExistingStringLabel.Width = s.Width;
+            ExistingStringLabel.Text = existingString;
+            Size s = TextRenderer.MeasureText(existingString, ExistingStringLabel.Font);
+            ExistingStringLabel.Width = s.Width;
 
-            InputTextBox.Left += s.Width;
-            InputTextBox.Width -= s.Width;
-            
+            TextBox.Left += s.Width;
+            TextBox.Width -= s.Width;
 
             LoadInputCustomTextLabel(labelText);
         }
@@ -34,11 +38,23 @@ namespace Ace7Ed.Prompt
         {
             BackColor = Theme.WindowColor;
             ForeColor = Theme.WindowTextColor;
+
+            Theme.SetDarkThemeButton(OkButton);
+
+            Theme.SetDarkThemeTextBox(TextBox);
+
+            Theme.SetDarkThemeLabel(CustomTextLabel);
+            Theme.SetDarkThemeLabel(ExistingStringLabel);
         }
 
         private void LoadInputCustomTextLabel(string labelText)
         {
-            InputCustomTextLabel.Text = labelText;
+            CustomTextLabel.Text = labelText;
+        }
+
+        private void OkButton_Click(object sender, EventArgs e)
+        {
+            DialogResult = DialogResult.OK;
         }
     }
 }
