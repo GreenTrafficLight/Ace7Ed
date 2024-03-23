@@ -441,7 +441,16 @@ namespace Ace7Ed
 
                         // Re-insert the node after updating it
                         TreeNode reInsertTreeNode = GetTreeNodeFromCmn(selectedCmnNode); // Create the new treeNode and its childrens
-                        treeNodeParent.Nodes.Insert(treeNodeIndex, reInsertTreeNode); // Re-insert the tree node in the right place
+
+                        // Re-insert the tree node in the right place
+                        if (treeNodeParent == null)
+                        {
+                            CmnTreeView.Nodes.Insert(treeNodeIndex, reInsertTreeNode);
+                        }
+                        else
+                        {
+                            treeNodeParent.Nodes.Insert(treeNodeIndex, reInsertTreeNode); 
+                        }
 
                         CmnTreeView.SelectedNode = reInsertTreeNode;
                         CmnTreeView.SelectedNode.Expand();
