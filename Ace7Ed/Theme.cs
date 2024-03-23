@@ -24,16 +24,22 @@ namespace Ace7Ed
 
         public static Color ControlColor => Configurations.Default.DarkTheme
             ? ControlDarkTheme : SystemColors.Control;
+        
         public static Color ControlDarkColor => Configurations.Default.DarkTheme
             ? ControlDarkDarkTheme : SystemColors.ControlDark;
+        
         public static Color ControlTextColor => Configurations.Default.DarkTheme
             ? ControlTextDarkTheme : SystemColors.ControlText;
+        
         public static Color HighlightColor => Configurations.Default.DarkTheme
             ? HighlightDarkTheme : SystemColors.Highlight;
+        
         public static Color HighlightTextColor => Configurations.Default.DarkTheme
             ? HighlightTextDarkTheme : SystemColors.HighlightText;
+        
         public static Color WindowColor => Configurations.Default.DarkTheme
             ? WindowDarkTheme : SystemColors.Window;
+        
         public static Color WindowTextColor => Configurations.Default.DarkTheme
             ? WindowTextDarkTheme : SystemColors.WindowText;
 
