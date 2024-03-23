@@ -15,8 +15,8 @@ namespace Ace7Ed
         private string _oldDatText { get; }
         public string DatText
         {
-            get { return DatStringEditorStringRichTextBox.Text + "\0"; }
-            set { DatStringEditorStringRichTextBox.Text = value.ToString(); }
+            get { return DatTextRichTextBox.Text + "\0"; }
+            set { DatTextRichTextBox.Text = value.ToString(); }
         }
 
         private bool _savedChanges = true;
@@ -35,16 +35,14 @@ namespace Ace7Ed
             BackColor = Theme.ControlColor;
             ForeColor = Theme.ControlTextColor;
 
-            DatStringEditorStringRichTextBox.BackColor = Theme.WindowColor;
-            DatStringEditorStringRichTextBox.ForeColor = Theme.WindowTextColor;
+            Theme.SetDarkThemeButton(SaveButton);
 
-            StringEditorSaveButton.BackColor = Theme.ControlColor;
-            StringEditorSaveButton.ForeColor = Theme.ControlTextColor;
+            Theme.SetDarkThemeRichTextBox(DatTextRichTextBox);
         }
 
         private void LoadStringEditorStringRichTextBox(string datText)
         {
-            DatStringEditorStringRichTextBox.Text = datText;
+            DatTextRichTextBox.Text = datText;
         }
 
         private void StringEditorSaveButton_Click(object sender, EventArgs e)
@@ -69,7 +67,7 @@ namespace Ace7Ed
 
         private void DatStringEditor_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (_savedChanges == false)
+            if (_savedChanges == false && DialogResult != DialogResult.OK)
             {
                 var result = MessageBox.Show("Exit Program?", "Exit?", MessageBoxButtons.YesNo);
                 if (result == DialogResult.No)

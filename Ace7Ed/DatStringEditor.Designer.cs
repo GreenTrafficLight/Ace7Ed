@@ -28,46 +28,49 @@
         /// </summary>
         private void InitializeComponent()
         {
-            DatStringEditorStringRichTextBox = new RichTextBox();
-            StringEditorSaveButton = new Button();
+            DatTextRichTextBox = new RichTextBox();
+            SaveButton = new Button();
             SuspendLayout();
             // 
-            // DatStringEditorStringRichTextBox
+            // DatTextRichTextBox
             // 
-            DatStringEditorStringRichTextBox.Location = new Point(12, 12);
-            DatStringEditorStringRichTextBox.Name = "DatStringEditorStringRichTextBox";
-            DatStringEditorStringRichTextBox.ScrollBars = RichTextBoxScrollBars.Vertical;
-            DatStringEditorStringRichTextBox.Size = new Size(776, 426);
-            DatStringEditorStringRichTextBox.TabIndex = 0;
-            DatStringEditorStringRichTextBox.Text = "";
-            DatStringEditorStringRichTextBox.TextChanged += DatStringEditorStringRichTextBox_TextChanged;
+            DatTextRichTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            DatTextRichTextBox.Location = new Point(12, 12);
+            DatTextRichTextBox.Name = "DatTextRichTextBox";
+            DatTextRichTextBox.ScrollBars = RichTextBoxScrollBars.Vertical;
+            DatTextRichTextBox.Size = new Size(776, 426);
+            DatTextRichTextBox.TabIndex = 0;
+            DatTextRichTextBox.Text = "";
+            DatTextRichTextBox.TextChanged += DatStringEditorStringRichTextBox_TextChanged;
             // 
-            // StringEditorSaveButton
+            // SaveButton
             // 
-            StringEditorSaveButton.Location = new Point(713, 444);
-            StringEditorSaveButton.Name = "StringEditorSaveButton";
-            StringEditorSaveButton.Size = new Size(75, 23);
-            StringEditorSaveButton.TabIndex = 1;
-            StringEditorSaveButton.Text = "Save";
-            StringEditorSaveButton.UseVisualStyleBackColor = true;
-            StringEditorSaveButton.Click += StringEditorSaveButton_Click;
+            SaveButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            SaveButton.FlatStyle = FlatStyle.Flat;
+            SaveButton.Location = new Point(713, 444);
+            SaveButton.Name = "SaveButton";
+            SaveButton.Size = new Size(75, 23);
+            SaveButton.TabIndex = 1;
+            SaveButton.Text = "Save";
+            SaveButton.UseVisualStyleBackColor = true;
+            SaveButton.Click += StringEditorSaveButton_Click;
             // 
             // DatStringEditor
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 473);
-            Controls.Add(StringEditorSaveButton);
-            Controls.Add(DatStringEditorStringRichTextBox);
+            Controls.Add(SaveButton);
+            Controls.Add(DatTextRichTextBox);
             Name = "DatStringEditor";
-            Text = "StringEditor";
+            Text = "String Editor";
             FormClosing += DatStringEditor_FormClosing;
             ResumeLayout(false);
         }
 
         #endregion
 
-        private RichTextBox DatStringEditorStringRichTextBox;
-        private Button StringEditorSaveButton;
+        private RichTextBox DatTextRichTextBox;
+        private Button SaveButton;
     }
 }
