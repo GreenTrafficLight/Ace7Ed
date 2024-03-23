@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using static Ace7LocalizationFormat.Formats.CMN;
 using Ace7Ed.Interact;
+using System.Diagnostics;
 
 namespace Ace7Ed
 {
@@ -63,6 +64,16 @@ namespace Ace7Ed
         {
             BackColor = Theme.ControlColor;
             ForeColor = Theme.ControlTextColor;
+
+            LocalizationEditorMenuStrip.Renderer = new Theme.MenuStripRenderer();
+
+            Theme.SetDarkThemeToolStripMenuItem(MenuStripMain);
+            Theme.SetDarkThemeToolStripMenuItem(MSMainOpenFolder);
+            Theme.SetDarkThemeToolStripMenuItem(MSMainSave);
+
+            Theme.SetDarkThemeToolStripMenuItem(MenuStripOptions);
+            Theme.SetDarkThemeToolStripMenuItem(MSOptionBatchCopyLanguage);
+            Theme.SetDarkThemeToolStripMenuItem(MSOptionsToggleDarkTheme);
 
             Theme.SetDarkThemeComboBox(DatLanguageComboBox);
 
