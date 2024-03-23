@@ -38,5 +38,18 @@ namespace Ace7Ed
 
             return gameFile;
         }
+
+        public static ToolStripMenuItem CreateToolStripMenuItem(string text, string name, EventHandler eventHandler = null, bool enabled = true)
+        {
+            ToolStripMenuItem toolStripMenuItem = new ToolStripMenuItem(text);
+            toolStripMenuItem.Name = name;
+            if (eventHandler != null)
+            {
+                toolStripMenuItem.Click += eventHandler;
+            }
+            toolStripMenuItem.Enabled = enabled;
+            Theme.SetDarkThemeToolStripMenuItem(toolStripMenuItem);
+            return toolStripMenuItem;
+        }
     }
 }
