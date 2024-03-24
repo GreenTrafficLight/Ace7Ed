@@ -198,8 +198,9 @@ namespace Ace7Ed
                 }
             }
 
-            if (modifiedCmn == null && modifiedDats.Count != 13)
+            if (modifiedCmn == null || modifiedDats.Count != 13)
             {
+                MessageBox.Show("Missing Dats", "Error");
                 throw new Exception("Missing Dats");
             }
 
