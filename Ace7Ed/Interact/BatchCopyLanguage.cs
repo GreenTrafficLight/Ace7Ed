@@ -35,15 +35,25 @@ namespace Ace7Ed.Interact
             }
         }
 
+        public int StartNumber
+        {
+            get
+            {
+                return Convert.ToInt32(StartNumnberNumericUpDown.Value);
+            }
+        }
+        
+        
         private List<DAT> _Dats;
 
-        public BatchCopyLanguage(List<DAT> dats)
+        public BatchCopyLanguage((CMN, List<DAT>) localization)
         {
             InitializeComponent();
             ToggleDarkTheme();
 
-            _Dats = dats;
+            _Dats = localization.Item2;
 
+            LoadStartNumberNumericUpDown(localization.Item1);
             LoadPasteLanguageComboBox(_Dats);
             LoadLanguagesDataGridView(_Dats);
         }
@@ -64,6 +74,11 @@ namespace Ace7Ed.Interact
             Theme.SetDarkThemeCheckBox(PasteLanguageOverwriteStringsCheckBox);
 
             Theme.SetDarkThemeDataGridView(PasteLanguagesDataGridView);
+        }
+
+        private void LoadStartNumberNumericUpDown(CMN cmn)
+        {
+            StartNumnberNumericUpDown.Maximum = cmn.MaxStringNumber;
         }
 
         private void LoadPasteLanguageComboBox(List<DAT> dats)

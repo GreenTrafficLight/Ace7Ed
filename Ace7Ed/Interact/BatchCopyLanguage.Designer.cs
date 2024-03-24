@@ -35,7 +35,10 @@
             SelectAllButton = new Button();
             DeselectAllButton = new Button();
             PasteLanguagesDataGridView = new DataGridView();
+            StartNumberLabel = new Label();
+            StartNumnberNumericUpDown = new NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)PasteLanguagesDataGridView).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)StartNumnberNumericUpDown).BeginInit();
             SuspendLayout();
             // 
             // PasteLanguageOverwriteStringsCheckBox
@@ -52,7 +55,7 @@
             // OkButton
             // 
             OkButton.FlatStyle = FlatStyle.Flat;
-            OkButton.Location = new Point(286, 448);
+            OkButton.Location = new Point(286, 477);
             OkButton.Name = "OkButton";
             OkButton.Size = new Size(65, 23);
             OkButton.TabIndex = 7;
@@ -81,7 +84,7 @@
             // 
             // SelectAllButton
             // 
-            SelectAllButton.Location = new Point(12, 81);
+            SelectAllButton.Location = new Point(12, 110);
             SelectAllButton.Name = "SelectAllButton";
             SelectAllButton.Size = new Size(82, 23);
             SelectAllButton.TabIndex = 11;
@@ -91,7 +94,7 @@
             // 
             // DeselectAllButton
             // 
-            DeselectAllButton.Location = new Point(100, 81);
+            DeselectAllButton.Location = new Point(100, 110);
             DeselectAllButton.Name = "DeselectAllButton";
             DeselectAllButton.Size = new Size(82, 23);
             DeselectAllButton.TabIndex = 10;
@@ -107,17 +110,35 @@
             PasteLanguagesDataGridView.AllowUserToResizeRows = false;
             PasteLanguagesDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             PasteLanguagesDataGridView.ColumnHeadersVisible = false;
-            PasteLanguagesDataGridView.Location = new Point(12, 110);
+            PasteLanguagesDataGridView.Location = new Point(14, 139);
             PasteLanguagesDataGridView.Name = "PasteLanguagesDataGridView";
             PasteLanguagesDataGridView.RowHeadersVisible = false;
             PasteLanguagesDataGridView.Size = new Size(339, 332);
             PasteLanguagesDataGridView.TabIndex = 9;
             // 
+            // StartNumberLabel
+            // 
+            StartNumberLabel.AutoSize = true;
+            StartNumberLabel.Location = new Point(14, 83);
+            StartNumberLabel.Name = "StartNumberLabel";
+            StartNumberLabel.Size = new Size(78, 15);
+            StartNumberLabel.TabIndex = 12;
+            StartNumberLabel.Text = "Start Number";
+            // 
+            // StartNumnberNumericUpDown
+            // 
+            StartNumnberNumericUpDown.Location = new Point(98, 81);
+            StartNumnberNumericUpDown.Name = "StartNumnberNumericUpDown";
+            StartNumnberNumericUpDown.Size = new Size(120, 23);
+            StartNumnberNumericUpDown.TabIndex = 14;
+            // 
             // BatchCopyLanguage
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(363, 479);
+            ClientSize = new Size(363, 505);
+            Controls.Add(StartNumnberNumericUpDown);
+            Controls.Add(StartNumberLabel);
             Controls.Add(SelectAllButton);
             Controls.Add(DeselectAllButton);
             Controls.Add(PasteLanguagesDataGridView);
@@ -128,6 +149,7 @@
             Name = "BatchCopyLanguage";
             Text = "Batch Copy Language";
             ((System.ComponentModel.ISupportInitialize)PasteLanguagesDataGridView).EndInit();
+            ((System.ComponentModel.ISupportInitialize)StartNumnberNumericUpDown).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -141,5 +163,7 @@
         private Button SelectAllButton;
         private Button DeselectAllButton;
         private DataGridView PasteLanguagesDataGridView;
+        private Label StartNumberLabel;
+        private NumericUpDown StartNumnberNumericUpDown;
     }
 }
