@@ -99,6 +99,12 @@ namespace Ace7Ed
             comboBox.ForeColor = WindowTextColor;
         }
 
+        public static void SetDarkThemeTreeView(TreeView treeView)
+        {
+            treeView.BackColor = WindowColor;
+            treeView.ForeColor = WindowTextColor;
+        }
+
         public static void SetDarkThemeLabel(Label label)
         {
             label.BackColor = ControlColor;
