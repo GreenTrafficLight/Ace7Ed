@@ -39,11 +39,19 @@ namespace Ace7Ed.Interact
         {
             get
             {
-                return Convert.ToInt32(StartNumnberNumericUpDown.Value);
+                return Convert.ToInt32(StartNumberNumericUpDown.Value);
             }
         }
-        
-        
+
+        public int EndNumber
+        {
+            get
+            {
+                return Convert.ToInt32(EndNumberNumericUpDown.Value);
+            }
+        }
+
+
         private List<DAT> _Dats;
 
         public BatchCopyLanguage((CMN, List<DAT>) localization)
@@ -54,6 +62,7 @@ namespace Ace7Ed.Interact
             _Dats = localization.Item2;
 
             LoadStartNumberNumericUpDown(localization.Item1);
+            LoadEndNumberNumericUpDown(localization.Item1);
             LoadPasteLanguageComboBox(_Dats);
             LoadLanguagesDataGridView(_Dats);
         }
@@ -78,7 +87,14 @@ namespace Ace7Ed.Interact
 
         private void LoadStartNumberNumericUpDown(CMN cmn)
         {
-            StartNumnberNumericUpDown.Maximum = cmn.MaxStringNumber;
+            StartNumberNumericUpDown.Maximum = cmn.MaxStringNumber;
+        }
+
+        private void LoadEndNumberNumericUpDown(CMN cmn)
+        {
+            EndNumberNumericUpDown.Minimum = StartNumberNumericUpDown.Value + 1;
+            EndNumberNumericUpDown.Maximum = cmn.MaxStringNumber + 1;
+            EndNumberNumericUpDown.Value = cmn.MaxStringNumber + 1;
         }
 
         private void LoadPasteLanguageComboBox(List<DAT> dats)
@@ -134,6 +150,11 @@ namespace Ace7Ed.Interact
         private void CopyLanguageComboBox_SelectedValueChanged(object sender, EventArgs e)
         {
             LoadLanguagesDataGridView(_Dats);
+        }
+
+        private void StartNumberNumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            EndNumberNumericUpDown.Minimum = StartNumberNumericUpDown.Value + 1;
         }
     }
 }

@@ -37,6 +37,7 @@
             // 
             // OkButton
             // 
+            OkButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             OkButton.Location = new Point(272, 379);
             OkButton.Name = "OkButton";
             OkButton.Size = new Size(79, 35);
@@ -51,6 +52,7 @@
             LanguagesDataGridView.AllowUserToDeleteRows = false;
             LanguagesDataGridView.AllowUserToResizeColumns = false;
             LanguagesDataGridView.AllowUserToResizeRows = false;
+            LanguagesDataGridView.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             LanguagesDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             LanguagesDataGridView.ColumnHeadersVisible = false;
             LanguagesDataGridView.Location = new Point(12, 41);

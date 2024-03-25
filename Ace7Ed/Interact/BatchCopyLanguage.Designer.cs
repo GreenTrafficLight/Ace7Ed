@@ -36,16 +36,19 @@
             DeselectAllButton = new Button();
             PasteLanguagesDataGridView = new DataGridView();
             StartNumberLabel = new Label();
-            StartNumnberNumericUpDown = new NumericUpDown();
+            StartNumberNumericUpDown = new NumericUpDown();
+            EndNumberNumericUpDown = new NumericUpDown();
+            EndNumberLabel = new Label();
             ((System.ComponentModel.ISupportInitialize)PasteLanguagesDataGridView).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)StartNumnberNumericUpDown).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)StartNumberNumericUpDown).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)EndNumberNumericUpDown).BeginInit();
             SuspendLayout();
             // 
             // PasteLanguageOverwriteStringsCheckBox
             // 
             PasteLanguageOverwriteStringsCheckBox.AutoSize = true;
             PasteLanguageOverwriteStringsCheckBox.FlatStyle = FlatStyle.Flat;
-            PasteLanguageOverwriteStringsCheckBox.Location = new Point(12, 56);
+            PasteLanguageOverwriteStringsCheckBox.Location = new Point(14, 56);
             PasteLanguageOverwriteStringsCheckBox.Name = "PasteLanguageOverwriteStringsCheckBox";
             PasteLanguageOverwriteStringsCheckBox.Size = new Size(156, 19);
             PasteLanguageOverwriteStringsCheckBox.TabIndex = 8;
@@ -54,8 +57,9 @@
             // 
             // OkButton
             // 
+            OkButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             OkButton.FlatStyle = FlatStyle.Flat;
-            OkButton.Location = new Point(286, 477);
+            OkButton.Location = new Point(288, 506);
             OkButton.Name = "OkButton";
             OkButton.Size = new Size(65, 23);
             OkButton.TabIndex = 7;
@@ -65,6 +69,7 @@
             // 
             // CopyLanguageComboBox
             // 
+            CopyLanguageComboBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             CopyLanguageComboBox.FlatStyle = FlatStyle.Flat;
             CopyLanguageComboBox.FormattingEnabled = true;
             CopyLanguageComboBox.Location = new Point(12, 27);
@@ -84,7 +89,7 @@
             // 
             // SelectAllButton
             // 
-            SelectAllButton.Location = new Point(12, 110);
+            SelectAllButton.Location = new Point(12, 139);
             SelectAllButton.Name = "SelectAllButton";
             SelectAllButton.Size = new Size(82, 23);
             SelectAllButton.TabIndex = 11;
@@ -94,7 +99,7 @@
             // 
             // DeselectAllButton
             // 
-            DeselectAllButton.Location = new Point(100, 110);
+            DeselectAllButton.Location = new Point(100, 139);
             DeselectAllButton.Name = "DeselectAllButton";
             DeselectAllButton.Size = new Size(82, 23);
             DeselectAllButton.TabIndex = 10;
@@ -108,9 +113,10 @@
             PasteLanguagesDataGridView.AllowUserToDeleteRows = false;
             PasteLanguagesDataGridView.AllowUserToResizeColumns = false;
             PasteLanguagesDataGridView.AllowUserToResizeRows = false;
+            PasteLanguagesDataGridView.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             PasteLanguagesDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             PasteLanguagesDataGridView.ColumnHeadersVisible = false;
-            PasteLanguagesDataGridView.Location = new Point(14, 139);
+            PasteLanguagesDataGridView.Location = new Point(14, 168);
             PasteLanguagesDataGridView.Name = "PasteLanguagesDataGridView";
             PasteLanguagesDataGridView.RowHeadersVisible = false;
             PasteLanguagesDataGridView.Size = new Size(339, 332);
@@ -119,25 +125,46 @@
             // StartNumberLabel
             // 
             StartNumberLabel.AutoSize = true;
-            StartNumberLabel.Location = new Point(14, 83);
+            StartNumberLabel.Location = new Point(10, 83);
             StartNumberLabel.Name = "StartNumberLabel";
             StartNumberLabel.Size = new Size(78, 15);
             StartNumberLabel.TabIndex = 12;
             StartNumberLabel.Text = "Start Number";
             // 
-            // StartNumnberNumericUpDown
+            // StartNumberNumericUpDown
             // 
-            StartNumnberNumericUpDown.Location = new Point(98, 81);
-            StartNumnberNumericUpDown.Name = "StartNumnberNumericUpDown";
-            StartNumnberNumericUpDown.Size = new Size(120, 23);
-            StartNumnberNumericUpDown.TabIndex = 14;
+            StartNumberNumericUpDown.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            StartNumberNumericUpDown.Location = new Point(98, 81);
+            StartNumberNumericUpDown.Name = "StartNumberNumericUpDown";
+            StartNumberNumericUpDown.Size = new Size(120, 23);
+            StartNumberNumericUpDown.TabIndex = 14;
+            StartNumberNumericUpDown.ValueChanged += StartNumberNumericUpDown_ValueChanged;
+            // 
+            // EndNumberNumericUpDown
+            // 
+            EndNumberNumericUpDown.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            EndNumberNumericUpDown.Location = new Point(98, 110);
+            EndNumberNumericUpDown.Name = "EndNumberNumericUpDown";
+            EndNumberNumericUpDown.Size = new Size(120, 23);
+            EndNumberNumericUpDown.TabIndex = 16;
+            // 
+            // EndNumberLabel
+            // 
+            EndNumberLabel.AutoSize = true;
+            EndNumberLabel.Location = new Point(10, 112);
+            EndNumberLabel.Name = "EndNumberLabel";
+            EndNumberLabel.Size = new Size(74, 15);
+            EndNumberLabel.TabIndex = 15;
+            EndNumberLabel.Text = "End Number";
             // 
             // BatchCopyLanguage
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(363, 505);
-            Controls.Add(StartNumnberNumericUpDown);
+            ClientSize = new Size(363, 540);
+            Controls.Add(EndNumberNumericUpDown);
+            Controls.Add(EndNumberLabel);
+            Controls.Add(StartNumberNumericUpDown);
             Controls.Add(StartNumberLabel);
             Controls.Add(SelectAllButton);
             Controls.Add(DeselectAllButton);
@@ -149,7 +176,8 @@
             Name = "BatchCopyLanguage";
             Text = "Batch Copy Language";
             ((System.ComponentModel.ISupportInitialize)PasteLanguagesDataGridView).EndInit();
-            ((System.ComponentModel.ISupportInitialize)StartNumnberNumericUpDown).EndInit();
+            ((System.ComponentModel.ISupportInitialize)StartNumberNumericUpDown).EndInit();
+            ((System.ComponentModel.ISupportInitialize)EndNumberNumericUpDown).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -164,6 +192,8 @@
         private Button DeselectAllButton;
         private DataGridView PasteLanguagesDataGridView;
         private Label StartNumberLabel;
-        private NumericUpDown StartNumnberNumericUpDown;
+        private NumericUpDown StartNumberNumericUpDown;
+        private NumericUpDown EndNumberNumericUpDown;
+        private Label EndNumberLabel;
     }
 }

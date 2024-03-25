@@ -79,6 +79,7 @@
             Controls.Add(OkButton);
             Controls.Add(TextBox);
             Controls.Add(CustomTextLabel);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
             Name = "Input";
             Text = "Input";
