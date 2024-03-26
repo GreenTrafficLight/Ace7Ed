@@ -188,13 +188,16 @@ namespace Ace7Ed
 
             foreach (string filePath in files)
             {
-                if (Path.GetFileNameWithoutExtension(filePath).Equals("Cmn", StringComparison.OrdinalIgnoreCase))
+                if (Path.GetExtension(filePath) == ".dat")
                 {
-                    modifiedCmn = new CMN(filePath);
-                }
-                else if (Constants.DatLetters.Contains(Path.GetFileNameWithoutExtension(filePath)[0]))
-                {
-                    modifiedDats.Add(new DAT(filePath, Path.GetFileNameWithoutExtension(filePath)[0]));
+                    if (Path.GetFileNameWithoutExtension(filePath).Equals("Cmn", StringComparison.OrdinalIgnoreCase))
+                    {
+                        modifiedCmn = new CMN(filePath);
+                    }
+                    else if (Constants.DatLetters.Contains(Path.GetFileNameWithoutExtension(filePath)[0]))
+                    {
+                        modifiedDats.Add(new DAT(filePath, Path.GetFileNameWithoutExtension(filePath)[0]));
+                    }
                 }
             }
 
@@ -205,6 +208,24 @@ namespace Ace7Ed
             }
 
             return (modifiedCmn, modifiedDats);
+        }
+
+        private void LoadLocalizationForUI(string folder)
+        {
+            // Check if each dat string count has the same number as the CMN max string number
+            foreach (var dat in _modifiedLocalization.Item2)
+            {
+                // Add null string for missing strings so the dat can be loaded
+                if (dat.Strings.Count < _modifiedLocalization.Item1.MaxStringNumber)
+                {
+                    dat.Strings.AddRange(Enumerable.Repeat("\0", _modifiedLocalization.Item1.MaxStringNumber + 1 - dat.Strings.Count));
+                }
+            }
+
+            _directory = folder;
+
+            LoadDatLanguageComboBox();
+            LoadCmnTreeView();
         }
 
         public TreeNode GetTreeNodeFromCmn(CmnString child)
@@ -300,22 +321,9 @@ namespace Ace7Ed
             {
                 string[] files = Directory.GetFiles(folderBrowser.SelectedPath);
 
-                _modifiedLocalization = LoadLocalization(files);
+                LoadLocalization(files);
 
-                // Check if each dat string count has the same number as the CMN max string number
-                foreach (var dat in _modifiedLocalization.Item2)
-                {
-                    // Add null string for missing strings so the dat can be loaded
-                    if (dat.Strings.Count < _modifiedLocalization.Item1.MaxStringNumber)
-                    {
-                        dat.Strings.AddRange(Enumerable.Repeat("\0", _modifiedLocalization.Item1.MaxStringNumber + 1 - dat.Strings.Count));
-                    }
-                }
-
-                _directory = folderBrowser.SelectedPath;
-
-                LoadDatLanguageComboBox();
-                LoadCmnTreeView();
+                LoadLocalizationForUI(folderBrowser.SelectedPath);
 
                 MSOptionBatchCopyLanguage.Enabled = true;
             }
@@ -606,5 +614,41 @@ namespace Ace7Ed
         }
 
         #endregion
+
+        private void DatsDataGridView_MouseDown(object sender, MouseEventArgs e)
+        {
+            DataGridView.HitTestInfo hitTest = DatsDataGridView.HitTest(e.X, e.Y);
+
+            if (hitTest.Type == DataGridViewHitTestType.None && DatsDataGridView.SelectedCells.Count > 0)
+            {
+                DatsDataGridView.ClearSelection();
+            }
+        }
+
+        private void LoadLocalization_DragDrop(object sender, DragEventArgs e)
+        {
+            string[] folderPaths = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+
+            foreach (string folderPath in folderPaths)
+            {
+                string[] files = Directory.GetFiles(folderPath);
+
+                LoadLocalization(files);
+
+                LoadLocalizationForUI(folderPath);
+            }
+            
+        }
+
+        private void LoadLocalization_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.None;
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                var path = ((string[])e.Data.GetData(DataFormats.FileDrop))[0];
+                if (Directory.Exists(path))
+                    e.Effect = DragDropEffects.All;
+            }
+        }
     }
 }

@@ -69,7 +69,7 @@ namespace Ace7Ed
         {
             if (_savedChanges == false && DialogResult != DialogResult.OK)
             {
-                var result = MessageBox.Show("Exit Program?", "Exit?", MessageBoxButtons.YesNo);
+                var result = MessageBox.Show("You have unsaved changes, are you sure that you want to exit ?", "Exit ?", MessageBoxButtons.YesNo);
                 if (result == DialogResult.No)
                 {
                     e.Cancel = true;

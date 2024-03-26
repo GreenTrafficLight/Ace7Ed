@@ -98,6 +98,7 @@
             // 
             // CmnTreeView
             // 
+            CmnTreeView.AllowDrop = true;
             CmnTreeView.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
             CmnTreeView.BackColor = SystemColors.Window;
             CmnTreeView.Location = new Point(12, 35);
@@ -106,9 +107,12 @@
             CmnTreeView.TabIndex = 2;
             CmnTreeView.AfterSelect += CmnTreeView_AfterSelect;
             CmnTreeView.NodeMouseClick += CmnTreeView_NodeMouseClick;
+            CmnTreeView.DragDrop += LoadLocalization_DragDrop;
+            CmnTreeView.DragEnter += LoadLocalization_DragEnter;
             // 
             // DatsDataGridView
             // 
+            DatsDataGridView.AllowDrop = true;
             DatsDataGridView.AllowUserToAddRows = false;
             DatsDataGridView.AllowUserToDeleteRows = false;
             DatsDataGridView.AllowUserToResizeColumns = false;
@@ -125,6 +129,9 @@
             DatsDataGridView.CellDoubleClick += DatsDataGridView_CellDoubleClick;
             DatsDataGridView.CellMouseClick += DatsDataGridView_CellMouseClick;
             DatsDataGridView.SelectionChanged += DatsDataGridView_SelectionChanged;
+            DatsDataGridView.DragDrop += LoadLocalization_DragDrop;
+            DatsDataGridView.DragEnter += LoadLocalization_DragEnter;
+            DatsDataGridView.MouseDown += DatsDataGridView_MouseDown;
             // 
             // DatLanguageComboBox
             // 
