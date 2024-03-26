@@ -15,13 +15,14 @@ namespace Ace7Ed.Interact
     {
         public List<char> SelectedPasteLanguages = new List<char>();
 
-        public int SelectedCopyLanguage
+        public int SelectedCopyLanguageIndex
         {
             get
             {
                 if (CopyLanguageComboBox.SelectedItem != null)
                 {
-                    return (char)CopyLanguageComboBox.SelectedItem - 65;
+                    DAT dat = (DAT)CopyLanguageComboBox.SelectedItem;
+                    return dat.Letter - 65;
                 }
                 return -1;
             }
@@ -103,7 +104,7 @@ namespace Ace7Ed.Interact
 
             CopyLanguageComboBox.Items.Clear();
 
-            dats.ForEach(dat => CopyLanguageComboBox.Items.Add(dat.Letter));
+            dats.ForEach(dat => CopyLanguageComboBox.Items.Add(dat));
 
             CopyLanguageComboBox.EndUpdate();
         }
@@ -117,11 +118,13 @@ namespace Ace7Ed.Interact
 
             PasteLanguagesDataGridView.Rows.Clear();
 
+            DAT selectedItem = (DAT)CopyLanguageComboBox.SelectedItem;
+
             foreach (var dat in dats)
             {
-                if (dat.Letter != SelectedCopyLanguage + 65 && SelectedCopyLanguage != -1)
+                if (dat.Letter != selectedItem.Letter && SelectedCopyLanguageIndex != -1)
                 {
-                    PasteLanguagesDataGridView.Rows.Add(dat.Letter.ToString());
+                    PasteLanguagesDataGridView.Rows.Add(dat);
                 }
             }
 
@@ -142,7 +145,8 @@ namespace Ace7Ed.Interact
         {
             foreach (DataGridViewCell selectedLanguage in PasteLanguagesDataGridView.SelectedCells)
             {
-                SelectedPasteLanguages.Add(selectedLanguage.Value.ToString()[0]);
+                DAT dat = (DAT)selectedLanguage.Value;
+                SelectedPasteLanguages.Add(dat.Letter);
             }
             DialogResult = DialogResult.OK;
         }

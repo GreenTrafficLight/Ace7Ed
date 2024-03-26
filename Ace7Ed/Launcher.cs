@@ -1,5 +1,6 @@
 ﻿using Ace7Ed.Properties;
 using Ace7LocalizationFormat.Formats;
+using Ace7LocalizationFormat;
 using CUE4Parse.Encryption.Aes;
 using CUE4Parse.FileProvider;
 using CUE4Parse.FileProvider.Objects;
@@ -31,6 +32,7 @@ namespace Ace7Ed
             LauncherTextBoxGameDir.Text = Configurations.Default.GamePath;
 
         }
+        
         private void ToggleDarkTheme()
         {
             BackColor = Theme.ControlColor;
@@ -55,6 +57,7 @@ namespace Ace7Ed
             LauncherTextBoxDatsDir.ForeColor = Theme.WindowTextColor;
             #endregion
         }
+        
         private void LauncherButtonGameDir_Click(object sender, EventArgs e)
         {
             using FolderBrowserDialog folderBrowser = new FolderBrowserDialog()
@@ -79,33 +82,12 @@ namespace Ace7Ed
             Configurations.Default.GamePath = LauncherTextBoxGameDir.Text;
             Configurations.Default.Save();
 
-            (CMN, List<DAT>) gameLocalization = LoadGameLocalization(Constants.DatLetters);
+            (CMN, List<DAT>) gameLocalization = LoadGameLocalization(AceLocalizationConstants.DatLetters.Keys.ToArray());
 
             string modifiedDatsDirectory = LauncherTextBoxDatsDir.Text;
 
             string[] files = Directory.GetFiles(modifiedDatsDirectory);
 
-            CMN modifiedCmn = null;
-            List<DAT> modifiedDats = new List<DAT>();
-
-            foreach (string filePath in files)
-            {
-                if (Path.GetFileNameWithoutExtension(filePath).Equals("Cmn", StringComparison.OrdinalIgnoreCase))
-                {
-                    modifiedCmn = new CMN(filePath);
-                }
-                else if (Constants.DatLetters.Contains(Path.GetFileNameWithoutExtension(filePath)[0]))
-                {
-                    modifiedDats.Add(new DAT(filePath, Path.GetFileNameWithoutExtension(filePath)[0]));
-                }
-            }
-
-            if (modifiedCmn == null && modifiedDats.Count != 13)
-            {
-                throw new Exception("Missing Dats");
-            }
-
-            (CMN, List<DAT>) modifiedLocalization = new(modifiedCmn, modifiedDats);
 
             Hide();
 

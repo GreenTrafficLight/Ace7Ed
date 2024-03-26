@@ -138,9 +138,9 @@
             DatLanguageComboBox.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             DatLanguageComboBox.FlatStyle = FlatStyle.Flat;
             DatLanguageComboBox.FormattingEnabled = true;
-            DatLanguageComboBox.Location = new Point(667, 27);
+            DatLanguageComboBox.Location = new Point(636, 27);
             DatLanguageComboBox.Name = "DatLanguageComboBox";
-            DatLanguageComboBox.Size = new Size(121, 23);
+            DatLanguageComboBox.Size = new Size(152, 23);
             DatLanguageComboBox.TabIndex = 5;
             DatLanguageComboBox.SelectedValueChanged += DatLanguageComboBox_SelectedValueChanged;
             // 
@@ -148,7 +148,7 @@
             // 
             SelectedLanguageLabel.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             SelectedLanguageLabel.AutoSize = true;
-            SelectedLanguageLabel.Location = new Point(549, 30);
+            SelectedLanguageLabel.Location = new Point(518, 30);
             SelectedLanguageLabel.Name = "SelectedLanguageLabel";
             SelectedLanguageLabel.Size = new Size(112, 15);
             SelectedLanguageLabel.TabIndex = 6;

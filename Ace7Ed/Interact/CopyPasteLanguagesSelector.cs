@@ -14,7 +14,7 @@ namespace Ace7Ed.Prompt
     public partial class CopyPasteLanguagesSelector : Form
     {
         public List<char> SelectedLanguages = new List<char>();
-        public CopyPasteLanguagesSelector(List<DAT> dats, char selectedLanguage)
+        public CopyPasteLanguagesSelector(List<DAT> dats, DAT selectedLanguage)
         {
             InitializeComponent();
             ToggleDarkTheme();
@@ -34,7 +34,7 @@ namespace Ace7Ed.Prompt
             Theme.SetDarkThemeDataGridView(LanguagesDataGridView);
         }
 
-        private void LoadLanguagesDataGridView(List<DAT> dats, char selectedLanguage)
+        private void LoadLanguagesDataGridView(List<DAT> dats, DAT selectedLanguage)
         {
             LanguagesDataGridView.Columns.Clear();
             LanguagesDataGridView.Columns.Add("designLanguage", "Language");
@@ -45,9 +45,9 @@ namespace Ace7Ed.Prompt
 
             foreach (var dat in dats)
             {
-                if (dat.Letter != selectedLanguage)
+                if (dat.Letter != selectedLanguage.Letter)
                 {
-                    LanguagesDataGridView.Rows.Add(dat.Letter.ToString());
+                    LanguagesDataGridView.Rows.Add(dat);
                 }
             }
 
@@ -58,7 +58,8 @@ namespace Ace7Ed.Prompt
         {
             foreach (DataGridViewCell selectedLanguage in LanguagesDataGridView.SelectedCells)
             {
-                SelectedLanguages.Add(selectedLanguage.Value.ToString()[0]);
+                DAT dat = (DAT)selectedLanguage.Value;
+                SelectedLanguages.Add(dat.Letter);
             }
             DialogResult = DialogResult.OK;
         }

@@ -26,7 +26,8 @@ namespace Ace7Ed
             {
                 if (DatLanguageComboBox.SelectedItem != null)
                 {
-                    return (char)DatLanguageComboBox.SelectedItem - 65;
+                    DAT dat = (DAT)DatLanguageComboBox.SelectedItem;
+                    return dat.Letter - 65;
                 }
                 return -1;
 
@@ -91,7 +92,7 @@ namespace Ace7Ed
             DatLanguageComboBox.Items.Clear();
 
             // Add dats to the comboBox
-            _modifiedLocalization.Item2.ForEach(dat => DatLanguageComboBox.Items.Add(dat.Letter));
+            _modifiedLocalization.Item2.ForEach(dat => DatLanguageComboBox.Items.Add(dat));
 
             DatLanguageComboBox.EndUpdate();
         }
@@ -124,8 +125,6 @@ namespace Ace7Ed
             DatsDataGridView.Columns[2].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             DatsDataGridView.Columns[2].ReadOnly = true;
 
-            DatsDataGridView.Sort(DatsDataGridView.Columns[0], ListSortDirection.Ascending);
-
             if (DatLanguageComboBox.SelectedItem != null)
             {
                 DatsDataGridView.Rows.Clear();
@@ -148,6 +147,8 @@ namespace Ace7Ed
                     }
                 }
             }
+
+            DatsDataGridView.Sort(DatsDataGridView.Columns[0], ListSortDirection.Ascending);
 
             DatsDataGridView.ClearSelection();
         }
@@ -194,7 +195,7 @@ namespace Ace7Ed
                     {
                         modifiedCmn = new CMN(filePath);
                     }
-                    else if (Constants.DatLetters.Contains(Path.GetFileNameWithoutExtension(filePath)[0]))
+                    else if (AceLocalizationConstants.DatLetters.Keys.Contains(Path.GetFileNameWithoutExtension(filePath)[0]))
                     {
                         modifiedDats.Add(new DAT(filePath, Path.GetFileNameWithoutExtension(filePath)[0]));
                     }
@@ -271,6 +272,32 @@ namespace Ace7Ed
             }
         }
 
+        private void LoadLocalization_DragDrop(object sender, DragEventArgs e)
+        {
+            string[] folderPaths = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+
+            foreach (string folderPath in folderPaths)
+            {
+                string[] files = Directory.GetFiles(folderPath);
+
+                _modifiedLocalization = LoadLocalization(files);
+
+                LoadLocalizationForUI(folderPath);
+            }
+
+        }
+
+        private void LoadLocalization_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.None;
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                var path = ((string[])e.Data.GetData(DataFormats.FileDrop))[0];
+                if (Directory.Exists(path))
+                    e.Effect = DragDropEffects.All;
+            }
+        }
+
         #endregion
 
         #region Menu Strip Controls
@@ -281,7 +308,7 @@ namespace Ace7Ed
             {
                 batchCopyLanguage.ShowDialog();
 
-                if (batchCopyLanguage.DialogResult == DialogResult.OK && batchCopyLanguage.SelectedCopyLanguage != -1 && batchCopyLanguage.SelectedPasteLanguages.Count != 0)
+                if (batchCopyLanguage.DialogResult == DialogResult.OK && batchCopyLanguage.SelectedCopyLanguageIndex != -1 && batchCopyLanguage.SelectedPasteLanguages.Count != 0)
                 {
                     // Loop through each Dat that are going to be pasted
                     foreach (var pasteLanguageLetter in batchCopyLanguage.SelectedPasteLanguages)
@@ -291,7 +318,7 @@ namespace Ace7Ed
                             // If the string is empty OR if the option "Overwrite existing strings" is checked, then replace the string
                             if (_modifiedLocalization.Item2[pasteLanguageLetter - 65].Strings[i] == "\0" || batchCopyLanguage.OverwriteExistingString == true)
                             {
-                                _modifiedLocalization.Item2[pasteLanguageLetter - 65].Strings[i] = _modifiedLocalization.Item2[batchCopyLanguage.SelectedCopyLanguage].Strings[i];
+                                _modifiedLocalization.Item2[pasteLanguageLetter - 65].Strings[i] = _modifiedLocalization.Item2[batchCopyLanguage.SelectedCopyLanguageIndex].Strings[i];
                             }
                         }
                     }
@@ -321,7 +348,7 @@ namespace Ace7Ed
             {
                 string[] files = Directory.GetFiles(folderBrowser.SelectedPath);
 
-                LoadLocalization(files);
+                _modifiedLocalization = LoadLocalization(files);
 
                 LoadLocalizationForUI(folderBrowser.SelectedPath);
 
@@ -448,6 +475,16 @@ namespace Ace7Ed
                     }
                     datStringEditor.Dispose();
                 }
+            }
+        }
+
+        private void DatsDataGridView_MouseDown(object sender, MouseEventArgs e)
+        {
+            DataGridView.HitTestInfo hitTest = DatsDataGridView.HitTest(e.X, e.Y);
+
+            if (hitTest.Type == DataGridViewHitTestType.None && DatsDataGridView.SelectedCells.Count > 0)
+            {
+                DatsDataGridView.ClearSelection();
             }
         }
 
@@ -579,7 +616,7 @@ namespace Ace7Ed
 
         private void CopyPasteToLanguagesMenuItem_Click(object sender, EventArgs e)
         {
-            using (var copyPasteLanguagesSelector = new CopyPasteLanguagesSelector(_modifiedLocalization.Item2, (char)DatLanguageComboBox.SelectedItem) { StartPosition = FormStartPosition.CenterScreen })
+            using (var copyPasteLanguagesSelector = new CopyPasteLanguagesSelector(_modifiedLocalization.Item2, (DAT)DatLanguageComboBox.SelectedItem) { StartPosition = FormStartPosition.CenterScreen })
             {
                 copyPasteLanguagesSelector.ShowDialog();
 
@@ -615,40 +652,6 @@ namespace Ace7Ed
 
         #endregion
 
-        private void DatsDataGridView_MouseDown(object sender, MouseEventArgs e)
-        {
-            DataGridView.HitTestInfo hitTest = DatsDataGridView.HitTest(e.X, e.Y);
 
-            if (hitTest.Type == DataGridViewHitTestType.None && DatsDataGridView.SelectedCells.Count > 0)
-            {
-                DatsDataGridView.ClearSelection();
-            }
-        }
-
-        private void LoadLocalization_DragDrop(object sender, DragEventArgs e)
-        {
-            string[] folderPaths = (string[])e.Data.GetData(DataFormats.FileDrop, false);
-
-            foreach (string folderPath in folderPaths)
-            {
-                string[] files = Directory.GetFiles(folderPath);
-
-                LoadLocalization(files);
-
-                LoadLocalizationForUI(folderPath);
-            }
-            
-        }
-
-        private void LoadLocalization_DragEnter(object sender, DragEventArgs e)
-        {
-            e.Effect = DragDropEffects.None;
-            if (e.Data.GetDataPresent(DataFormats.FileDrop))
-            {
-                var path = ((string[])e.Data.GetData(DataFormats.FileDrop))[0];
-                if (Directory.Exists(path))
-                    e.Effect = DragDropEffects.All;
-            }
-        }
     }
 }
