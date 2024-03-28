@@ -65,7 +65,6 @@ namespace Ace7Ed.Interact
             LoadStartNumberNumericUpDown(localization.Item1);
             LoadEndNumberNumericUpDown(localization.Item1);
             LoadPasteLanguageComboBox(_Dats);
-            LoadLanguagesDataGridView(_Dats);
         }
 
         private void ToggleDarkTheme()
