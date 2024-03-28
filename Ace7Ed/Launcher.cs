@@ -15,6 +15,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using CUE4Parse.UE4.Readers;
+using CUE4Parse.UE4.Assets;
+using Newtonsoft.Json;
 
 namespace Ace7Ed
 {
@@ -42,9 +45,6 @@ namespace Ace7Ed
             LauncherButtonGameDir.BackColor = Theme.ControlColor;
             LauncherButtonGameDir.ForeColor = Theme.ControlTextColor;
 
-            LauncherButtonDatsDir.BackColor = Theme.ControlColor;
-            LauncherButtonDatsDir.ForeColor = Theme.ControlTextColor;
-
             LauncherButtonOk.BackColor = Theme.ControlColor;
             LauncherButtonOk.ForeColor = Theme.ControlTextColor;
             #endregion
@@ -53,8 +53,6 @@ namespace Ace7Ed
             LauncherTextBoxGameDir.BackColor = Theme.WindowColor;
             LauncherTextBoxGameDir.ForeColor = Theme.WindowTextColor;
 
-            LauncherTextBoxDatsDir.BackColor = Theme.WindowColor;
-            LauncherTextBoxDatsDir.ForeColor = Theme.WindowTextColor;
             #endregion
         }
         
@@ -84,28 +82,26 @@ namespace Ace7Ed
 
             (CMN, List<DAT>) gameLocalization = LoadGameLocalization(AceLocalizationConstants.DatLetters.Keys.ToArray());
 
-            string modifiedDatsDirectory = LauncherTextBoxDatsDir.Text;
+            /*
+            GameFile gameFileUasset = Utils.GetGameFile(PaksGameFiles, "Nimbus/Content/Blueprint/Information/PlayerPlaneDataTable.uasset");
+            GameFile gameFileUexp = Utils.GetGameFile(PaksGameFiles, "Nimbus/Content/Blueprint/Information/PlayerPlaneDataTable.uexp");
 
-            string[] files = Directory.GetFiles(modifiedDatsDirectory);
+            gameFileUasset.TryCreateReader(out FArchive uasset);
+            gameFileUexp.TryCreateReader(out FArchive uexp);
+            FArchive ubulk = null;
 
-
-            Hide();
-
-            using (var localizationEditor = new LocalizationEditor() { StartPosition = FormStartPosition.CenterScreen })
-            {
-                localizationEditor.ShowDialog();
-            }
-
-            Close();
+            var test = new Package(uasset, uexp, ubulk, null, null, null, true);
+            var test2 = test.GetExports();
+            var fullJson = JsonConvert.SerializeObject(test2, Formatting.Indented);*/
         }
     
         private (CMN, List<DAT>) LoadGameLocalization(char[] datLetters)
         {
-            CMN gameCmn = new CMN(Utils.GetGameFile(PaksGameFiles, "Nimbus/Content/Localization/Game/Cmn.dat"));
+            CMN gameCmn = new CMN(Utils.GetGameFileData(PaksGameFiles, "Nimbus/Content/Localization/Game/Cmn.dat"));
             List<DAT> gameDats = new List<DAT>();
             foreach (char datLetter in datLetters)
             {
-                gameDats.Add(new DAT(Utils.GetGameFile(PaksGameFiles, "Nimbus/Content/Localization/Game/" + datLetter + ".dat"), datLetter));
+                gameDats.Add(new DAT(Utils.GetGameFileData(PaksGameFiles, "Nimbus/Content/Localization/Game/" + datLetter + ".dat"), datLetter));
             }
 
             return (gameCmn, gameDats);

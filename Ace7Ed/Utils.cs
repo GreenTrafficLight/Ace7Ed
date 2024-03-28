@@ -24,7 +24,7 @@ namespace Ace7Ed
             }
         }
 
-        public static byte[] GetGameFile(List<KeyValuePair<string, Dictionary<string, GameFile>>> paks, string fileName)
+        public static byte[] GetGameFileData(List<KeyValuePair<string, Dictionary<string, GameFile>>> paks, string fileName)
         {
             byte[] gameFile = null;
 
@@ -33,6 +33,21 @@ namespace Ace7Ed
                 if (pakGameFiles.Value.ContainsKey(fileName) && gameFile == null)
                 {
                     gameFile = pakGameFiles.Value[fileName].Read();
+                }
+            }
+
+            return gameFile;
+        }
+
+        public static GameFile GetGameFile(List<KeyValuePair<string, Dictionary<string, GameFile>>> paks, string fileName)
+        {
+            GameFile gameFile = null;
+
+            foreach (var pakGameFiles in paks)
+            {
+                if (pakGameFiles.Value.ContainsKey(fileName) && gameFile == null)
+                {
+                    gameFile = pakGameFiles.Value[fileName];
                 }
             }
 
