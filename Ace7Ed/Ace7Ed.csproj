@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Ace7-Localization-Format\Ace7LocalizationFormat\Ace7LocalizationFormat.csproj" />
+    <ProjectReference Include="..\UAssetAPI\UAssetAPI\UAssetAPI.csproj" />
   </ItemGroup>
 
   <ItemGroup>
