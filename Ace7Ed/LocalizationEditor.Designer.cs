@@ -39,6 +39,7 @@
             DatsDataGridView = new DataGridView();
             DatLanguageComboBox = new ComboBox();
             SelectedLanguageLabel = new Label();
+            MSOptionImportLocalization = new ToolStripMenuItem();
             LocalizationEditorMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)DatsDataGridView).BeginInit();
             SuspendLayout();
@@ -76,7 +77,7 @@
             // 
             // MenuStripOptions
             // 
-            MenuStripOptions.DropDownItems.AddRange(new ToolStripItem[] { MSOptionBatchCopyLanguage, MSOptionsToggleDarkTheme });
+            MenuStripOptions.DropDownItems.AddRange(new ToolStripItem[] { MSOptionImportLocalization, MSOptionBatchCopyLanguage, MSOptionsToggleDarkTheme });
             MenuStripOptions.Name = "MenuStripOptions";
             MenuStripOptions.Size = new Size(61, 20);
             MenuStripOptions.Text = "Options";
@@ -154,6 +155,14 @@
             SelectedLanguageLabel.TabIndex = 6;
             SelectedLanguageLabel.Text = "Selected Language :";
             // 
+            // MSOptionImportLocalization
+            // 
+            MSOptionImportLocalization.Enabled = false;
+            MSOptionImportLocalization.Name = "MSOptionImportLocalization";
+            MSOptionImportLocalization.Size = new Size(194, 22);
+            MSOptionImportLocalization.Text = "Import Localization";
+            MSOptionImportLocalization.Click += MSOptionImportLocalization_Click;
+            // 
             // LocalizationEditor
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -189,5 +198,6 @@
         private ToolStripMenuItem MSMainOpenFolder;
         private ToolStripMenuItem MSMainSave;
         private ToolStripMenuItem MSOptionBatchCopyLanguage;
+        private ToolStripMenuItem MSOptionImportLocalization;
     }
 }

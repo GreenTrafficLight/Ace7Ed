@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using static Ace7LocalizationFormat.Formats.CMN;
 using Ace7Ed.Interact;
 using System.Diagnostics;
+using System.ComponentModel.Design.Serialization;
 
 namespace Ace7Ed
 {
@@ -15,7 +16,8 @@ namespace Ace7Ed
 
         private string _directory { get; set; }
 
-        private (int, List<int>) _copyStrings { get; set; }
+        private (int, List<int>) _copyVariableStrings { get; set; }
+        private (int, List<string>) _copyStrings { get; set; }
 
         private int _selectedRowIndex = -1;
         private int _selectedColumnIndex = -1;
@@ -59,6 +61,9 @@ namespace Ace7Ed
         {
             InitializeComponent();
             ToggleDarkTheme();
+
+            MSOptionImportLocalization.Enabled = false;
+            MSOptionImportLocalization.Visible = false;
         }
 
         private void ToggleDarkTheme()
@@ -73,6 +78,7 @@ namespace Ace7Ed
             Theme.SetDarkThemeToolStripMenuItem(MSMainSave);
 
             Theme.SetDarkThemeToolStripMenuItem(MenuStripOptions);
+            Theme.SetDarkThemeToolStripMenuItem(MSOptionImportLocalization);
             Theme.SetDarkThemeToolStripMenuItem(MSOptionBatchCopyLanguage);
             Theme.SetDarkThemeToolStripMenuItem(MSOptionsToggleDarkTheme);
 
@@ -104,7 +110,7 @@ namespace Ace7Ed
             CmnTreeView.Nodes.Clear();
 
             // Add nodes of the CMN
-            foreach (var node in _modifiedLocalization.Item1.Root)
+            foreach (var node in _modifiedLocalization.Item1.Root.Childrens)
             {
                 CmnTreeView.Nodes.Add(GetTreeNodeFromCmn(node));
             }
@@ -140,7 +146,7 @@ namespace Ace7Ed
                     // Load all strings
                     else if (CmnTreeView.SelectedNode == null)
                     {
-                        foreach (var node in _modifiedLocalization.Item1.Root)
+                        foreach (var node in _modifiedLocalization.Item1.Root.Childrens)
                         {
                             AddCmnNodeToDataGridView(dat, node);
                         }
@@ -229,12 +235,12 @@ namespace Ace7Ed
             LoadCmnTreeView();
         }
 
-        public TreeNode GetTreeNodeFromCmn(CmnString child)
+        public TreeNode GetTreeNodeFromCmn(CmnString parent)
         {
             var root = new TreeNode();
-            root.Name = child.Name;
-            root.Text = child.FullName;
-            root.Tag = child;
+            root.Name = parent.Name;
+            root.Text = parent.FullName;
+            root.Tag = parent;
 
             List<TreeNode> nodesToVisit = [root];
 
@@ -243,12 +249,12 @@ namespace Ace7Ed
             {
                 TreeNode currentCmnNode = nodesToVisit[index];
                 CmnString cmnString = (CmnString)currentCmnNode.Tag;
-                foreach (var subChild in cmnString.Childrens)
+                foreach (var child in cmnString.Childrens)
                 {
                     TreeNode subNode = new TreeNode();
-                    subNode.Name = subChild.Name;
-                    subNode.Text = subChild.FullName;
-                    subNode.Tag = subChild;
+                    subNode.Name = child.Name;
+                    subNode.Text = child.FullName;
+                    subNode.Tag = child;
                     currentCmnNode.Nodes.Add(subNode);
                     nodesToVisit.Add(subNode);
                 }
@@ -258,15 +264,56 @@ namespace Ace7Ed
             return root;
         }
 
-        private void AddCmnNodeToDataGridView(DAT dat, CmnString child)
+        public void ImportLocalization((CMN, List<DAT>) localization)
         {
-            if (child.StringNumber != -1)
+            List<CmnString> nodesToVisit = [localization.Item1.Root];
+
+            int index = 0;
+            while (index < nodesToVisit.Count)
             {
-                string text = dat.Strings[child.StringNumber];
-                DatsDataGridView.Rows.Add(child.StringNumber, child.FullName, text);
+                CmnString cmnString = nodesToVisit[index];
+                foreach (var child in cmnString.Childrens)
+                {
+                    bool isVariableAdded = _modifiedLocalization.Item1.AddVariable(child.FullName, _modifiedLocalization.Item1.Root, out int variableStringNumber, child.StringNumber == -1 ? true : false);
+
+                    if (child.StringNumber != -1)
+                    {
+                        foreach (var dat in localization.Item2)
+                        {
+                            if (child.StringNumber < dat.Strings.Count)
+                            {
+                                if (isVariableAdded)
+                                {
+                                    _modifiedLocalization.Item2[dat.Letter - 65].Strings.Add(localization.Item2[dat.Letter - 65].Strings[child.StringNumber]);
+                                }
+                                else
+                                {
+                                    _modifiedLocalization.Item2[dat.Letter - 65].Strings[variableStringNumber] = localization.Item2[dat.Letter - 65].Strings[child.StringNumber];
+                                }
+                            }
+                            else
+                            {
+                                _modifiedLocalization.Item2[dat.Letter - 65].Strings.Add("\0");
+                            }
+                        }
+                    }
+                    nodesToVisit.Add(child);
+                }
+                index++;
             }
 
-            foreach (var children in child.Childrens)
+            Debug.WriteLine(_modifiedLocalization.Item1.MaxStringNumber);
+        }
+
+        private void AddCmnNodeToDataGridView(DAT dat, CmnString parent)
+        {
+            if (parent.StringNumber != -1)
+            {
+                string text = dat.Strings[parent.StringNumber];
+                DatsDataGridView.Rows.Add(parent.StringNumber, parent.FullName, text);
+            }
+
+            foreach (var children in parent.Childrens)
             {
                 AddCmnNodeToDataGridView(dat, children);
             }
@@ -301,6 +348,27 @@ namespace Ace7Ed
         #endregion
 
         #region Menu Strip Controls
+
+        private void MSOptionImportLocalization_Click(object sender, EventArgs e)
+        {
+            using FolderBrowserDialog folderBrowser = new FolderBrowserDialog()
+            {
+                Description = "Select DATs directory",
+                RootFolder = Environment.SpecialFolder.MyComputer,
+            };
+
+            if (folderBrowser.ShowDialog() == DialogResult.OK)
+            {
+                string[] files = Directory.GetFiles(folderBrowser.SelectedPath);
+
+                var localization = LoadLocalization(files);
+
+                ImportLocalization(localization);
+
+                LoadCmnTreeView();
+                LoadDatsDataGridView();
+            }
+        }
 
         private void MSOptionBatchCopyLanguage_Click(object sender, EventArgs e)
         {
@@ -352,6 +420,7 @@ namespace Ace7Ed
 
                 LoadLocalizationForUI(folderBrowser.SelectedPath);
 
+                MSOptionImportLocalization.Enabled = true;
                 MSOptionBatchCopyLanguage.Enabled = true;
             }
         }
@@ -379,7 +448,7 @@ namespace Ace7Ed
                 {
                     ContextMenuStrip contextMenu = new ContextMenuStrip();
 
-                    ToolStripMenuItem newMenuItem = Utils.CreateToolStripMenuItem("New", "New", new EventHandler(NewMenuItem_Click), _modifiedLocalization.Item2 == null ? false : true);
+                    ToolStripMenuItem newMenuItem = Utils.CreateToolStripMenuItem("New", "New", new EventHandler(NewVariableMenuItem_Click), _modifiedLocalization.Item2 == null ? false : true);
                     contextMenu.Items.Add(newMenuItem);
 
                     //ToolStripMenuItem renameMenuItem = Utils.CreateToolStripMenuItem("Rename", "Rename", new EventHandler(RenameMenuItem_Click), _modifiedLocalization.Item2 == null ? false : true);
@@ -439,14 +508,26 @@ namespace Ace7Ed
             {
                 ContextMenuStrip contextMenu = new ContextMenuStrip();
 
-                ToolStripMenuItem copyMenuItem = Utils.CreateToolStripMenuItem("Copy", "Copy", new EventHandler(CopyMenuItem_Click), DatsDataGridView.SelectedCells.Count == 0 ? false : true);
-                contextMenu.Items.Add(copyMenuItem);
+                if (e.ColumnIndex != 2)
+                {
+                    ToolStripMenuItem copyVariablesMenuItem = Utils.CreateToolStripMenuItem("Copy Variables", "CopyVariables", new EventHandler(CopyVariableStringMenuItem_Click), DatsDataGridView.SelectedCells.Count == 0 ? false : true);
+                    contextMenu.Items.Add(copyVariablesMenuItem);
 
-                ToolStripMenuItem pasteMenuItem = Utils.CreateToolStripMenuItem("Paste", "Paste", new EventHandler(PasteMenuItem_Click), _copyStrings.Item2 == null ? false : true);
-                contextMenu.Items.Add(pasteMenuItem);
+                    ToolStripMenuItem pasteVariablesMenuItem = Utils.CreateToolStripMenuItem("Paste Variables", "PasteVariables", new EventHandler(PasteVariableStringMenuItem_Click), _copyVariableStrings.Item2 == null ? false : true);
+                    contextMenu.Items.Add(pasteVariablesMenuItem);
 
-                ToolStripMenuItem copyPasteToLanguagesMenuItem = Utils.CreateToolStripMenuItem("Copy Paste to languages", "CopyPasteToLanguages", new EventHandler(CopyPasteToLanguagesMenuItem_Click), DatsDataGridView.SelectedCells.Count == 0 ? false : true);
-                contextMenu.Items.Add(copyPasteToLanguagesMenuItem);
+                    ToolStripMenuItem copyPasteToLanguagesMenuItem = Utils.CreateToolStripMenuItem("Copy Paste to languages", "CopyPasteToLanguages", new EventHandler(CopyPasteToLanguagesMenuItem_Click), DatsDataGridView.SelectedCells.Count == 0 ? false : true);
+                    contextMenu.Items.Add(copyPasteToLanguagesMenuItem);
+                }
+                else
+                {
+                    ToolStripMenuItem copyStringsMenuItem = Utils.CreateToolStripMenuItem("Copy Strings", "CopyStrings", new EventHandler(CopyStringMenuItem_Click));
+                    contextMenu.Items.Add(copyStringsMenuItem);
+
+                    ToolStripMenuItem pasteStringsMenuItem = Utils.CreateToolStripMenuItem("Paste Strings", "PasteStrings", new EventHandler(PasteStringMenuItem_Click));
+                    contextMenu.Items.Add(pasteStringsMenuItem);
+                }
+
 
                 ToolStripMenuItem selectAllMenuItem = Utils.CreateToolStripMenuItem("Select All", "SelectAll", new EventHandler(SelectAllMenuItem_Click));
                 contextMenu.Items.Add(selectAllMenuItem);
@@ -500,7 +581,9 @@ namespace Ace7Ed
 
         #region Menu Items
 
-        private void NewMenuItem_Click(object sender, EventArgs e)
+        #region CmnTreeView Menu Items
+
+        private void NewVariableMenuItem_Click(object sender, EventArgs e)
         {
             TreeNode treeNode = CmnTreeView.SelectedNode;
             int treeNodeIndex = treeNode.Index;
@@ -514,7 +597,7 @@ namespace Ace7Ed
                 if (input.DialogResult == DialogResult.OK)
                 {
                     CmnString selectedCmnNode = (CmnString)treeNode.Tag;
-                    if (_modifiedLocalization.Item1.AddVariable(input.InputText, selectedCmnNode))
+                    if (_modifiedLocalization.Item1.AddVariable(input.InputText, selectedCmnNode, out int variableStringNumber))
                     {
                         // Add the new string variable to each dat
                         foreach (var dat in _modifiedLocalization.Item2)
@@ -551,7 +634,7 @@ namespace Ace7Ed
             }
         }
 
-        private void RenameMenuItem_Click(object sender, EventArgs e)
+        private void RenameVariableMenuItem_Click(object sender, EventArgs e)
         {
             TreeNode treeNode = CmnTreeView.SelectedNode;
             int treeNodeIndex = treeNode.Index;
@@ -571,7 +654,7 @@ namespace Ace7Ed
             }
         }
 
-        private void DeleteMenuItem_Click(object sender, EventArgs e)
+        private void DeleteVariableMenuItem_Click(object sender, EventArgs e)
         {
             TreeNode treeNode = CmnTreeView.SelectedNode;
 
@@ -593,7 +676,13 @@ namespace Ace7Ed
             }
         }
 
-        private void CopyMenuItem_Click(object sender, EventArgs e)
+        #endregion
+
+        #region DatsGridView Menu Items
+
+        #region Variable Column (0 and 1)
+
+        private void CopyVariableStringMenuItem_Click(object sender, EventArgs e)
         {
             List<int> copyVariableNumbers = new List<int>();
 
@@ -602,17 +691,21 @@ namespace Ace7Ed
                 int variableStringNumber = (int)DatsDataGridView.Rows[selectedCell.RowIndex].Cells[0].Value;
                 copyVariableNumbers.Add(variableStringNumber);
             }
-            _copyStrings = (_selectedDatIndex, copyVariableNumbers);
+            _copyVariableStrings = (_selectedDatIndex, copyVariableNumbers);
         }
 
-        private void PasteMenuItem_Click(object sender, EventArgs e)
+        private void PasteVariableStringMenuItem_Click(object sender, EventArgs e)
         {
-            foreach (int copyVariableNumber in _copyStrings.Item2)
+            foreach (int copyVariableNumber in _copyVariableStrings.Item2)
             {
-                _modifiedLocalization.Item2[_selectedDatIndex].Strings[copyVariableNumber] = _modifiedLocalization.Item2[_copyStrings.Item1].Strings[copyVariableNumber];
+                _modifiedLocalization.Item2[_selectedDatIndex].Strings[copyVariableNumber] = _modifiedLocalization.Item2[_copyVariableStrings.Item1].Strings[copyVariableNumber];
             }
             LoadDatsDataGridView();
         }
+
+        #endregion
+
+        #region String Column (2)
 
         private void CopyPasteToLanguagesMenuItem_Click(object sender, EventArgs e)
         {
@@ -637,6 +730,40 @@ namespace Ace7Ed
             }
         }
 
+        private void CopyStringMenuItem_Click(object sender, EventArgs e)
+        {
+            List<string> copyStrings = new List<string>();
+
+            foreach (DataGridViewCell selectedCell in DatsDataGridView.SelectedCells)
+            {
+                string datString = selectedCell.Value.ToString();
+                copyStrings.Add(datString);
+            }
+            _copyStrings = (_selectedDatIndex, copyStrings);
+        }
+
+        private void PasteStringMenuItem_Click(object sender, EventArgs e)
+        {
+            int index = 0;
+            foreach (DataGridViewCell selectedCell in DatsDataGridView.SelectedCells)
+            {
+                int variableStringNumber = (int)DatsDataGridView.Rows[selectedCell.RowIndex].Cells[0].Value;
+                if (_copyStrings.Item2.Count == 1)
+                {
+                    DatsDataGridView.Rows[selectedCell.RowIndex].Cells[2].Value = _copyStrings.Item2[0];
+                    _modifiedLocalization.Item2[_selectedDatIndex].Strings[variableStringNumber] = _copyStrings.Item2[0];
+                }
+                else if (index < _copyStrings.Item2.Count)
+                {
+                    DatsDataGridView.Rows[selectedCell.RowIndex].Cells[2].Value = "\0";
+                    _modifiedLocalization.Item2[_selectedDatIndex].Strings[variableStringNumber] = "\0";
+                }
+                index++;
+            }
+        }
+
+        #endregion
+
         private void SelectAllMenuItem_Click(object sender, EventArgs e)
         {
             for (int i = 0; i < DatsDataGridView.Rows.Count; i++)
@@ -652,6 +779,6 @@ namespace Ace7Ed
 
         #endregion
 
-
+        #endregion
     }
 }
