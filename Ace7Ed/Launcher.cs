@@ -24,9 +24,7 @@ namespace Ace7Ed
     public partial class Launcher : Form
     {
         public List<KeyValuePair<string, Dictionary<string, GameFile>>> PaksGameFiles = new List<KeyValuePair<string, Dictionary<string, GameFile>>>();
-        public List<KeyValuePair<string, Dictionary<string, GameFile>>> PaksModsGameFiles = new List<KeyValuePair<string, Dictionary<string, GameFile>>>();
-        public DefaultFileProvider GameProvider;
-        public DefaultFileProvider ModsProvider;
+        private DefaultFileProvider _gameProvider;
 
         public Launcher()
         {
@@ -74,28 +72,16 @@ namespace Ace7Ed
         {
             string gameDirectory = LauncherTextBoxGameDir.Text;
 
-            GameProvider = new DefaultFileProvider(gameDirectory + "\\Game\\Content\\Paks", SearchOption.TopDirectoryOnly, true, new VersionContainer(EGame.GAME_AceCombat7));
-            Utils.GetGameFiles(GameProvider, "68747470733a2f2f616365372e616365636f6d6261742e6a702f737065636961", PaksGameFiles);
+            _gameProvider = new DefaultFileProvider(gameDirectory + "\\Game\\Content\\Paks", SearchOption.TopDirectoryOnly, true, new VersionContainer(EGame.GAME_AceCombat7));
+            Utils.GetGameFilesByOrder(_gameProvider, "68747470733a2f2f616365372e616365636f6d6261742e6a702f737065636961", PaksGameFiles);
 
             Configurations.Default.GamePath = LauncherTextBoxGameDir.Text;
             Configurations.Default.Save();
 
-            (CMN, List<DAT>) gameLocalization = LoadGameLocalization(AceLocalizationConstants.DatLetters.Keys.ToArray());
-
-            /*
-            GameFile gameFileUasset = Utils.GetGameFile(PaksGameFiles, "Nimbus/Content/Blueprint/Information/PlayerPlaneDataTable.uasset");
-            GameFile gameFileUexp = Utils.GetGameFile(PaksGameFiles, "Nimbus/Content/Blueprint/Information/PlayerPlaneDataTable.uexp");
-
-            gameFileUasset.TryCreateReader(out FArchive uasset);
-            gameFileUexp.TryCreateReader(out FArchive uexp);
-            FArchive ubulk = null;
-
-            var test = new Package(uasset, uexp, ubulk, null, null, null, true);
-            var test2 = test.GetExports();
-            var fullJson = JsonConvert.SerializeObject(test2, Formatting.Indented);*/
+            DialogResult = DialogResult.OK;
         }
     
-        private (CMN, List<DAT>) LoadGameLocalization(char[] datLetters)
+        public (CMN, List<DAT>) LoadGameLocalization(char[] datLetters)
         {
             CMN gameCmn = new CMN(Utils.GetGameFileData(PaksGameFiles, "Nimbus/Content/Localization/Game/Cmn.dat"));
             List<DAT> gameDats = new List<DAT>();

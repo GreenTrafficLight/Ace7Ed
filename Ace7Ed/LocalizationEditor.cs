@@ -71,7 +71,7 @@ namespace Ace7Ed
             BackColor = Theme.ControlColor;
             ForeColor = Theme.ControlTextColor;
 
-            LocalizationEditorMenuStrip.Renderer = new Theme.MenuStripRenderer();
+            MenuStrip.Renderer = new Theme.MenuStripRenderer();
 
             Theme.SetDarkThemeToolStripMenuItem(MenuStripMain);
             Theme.SetDarkThemeToolStripMenuItem(MSMainOpenFolder);

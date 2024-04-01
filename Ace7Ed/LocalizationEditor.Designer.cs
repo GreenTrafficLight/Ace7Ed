@@ -28,30 +28,30 @@
         /// </summary>
         private void InitializeComponent()
         {
-            LocalizationEditorMenuStrip = new MenuStrip();
+            MenuStrip = new MenuStrip();
             MenuStripMain = new ToolStripMenuItem();
             MSMainOpenFolder = new ToolStripMenuItem();
             MSMainSave = new ToolStripMenuItem();
             MenuStripOptions = new ToolStripMenuItem();
+            MSOptionImportLocalization = new ToolStripMenuItem();
             MSOptionBatchCopyLanguage = new ToolStripMenuItem();
             MSOptionsToggleDarkTheme = new ToolStripMenuItem();
             CmnTreeView = new TreeView();
             DatsDataGridView = new DataGridView();
             DatLanguageComboBox = new ComboBox();
             SelectedLanguageLabel = new Label();
-            MSOptionImportLocalization = new ToolStripMenuItem();
-            LocalizationEditorMenuStrip.SuspendLayout();
+            MenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)DatsDataGridView).BeginInit();
             SuspendLayout();
             // 
-            // LocalizationEditorMenuStrip
+            // MenuStrip
             // 
-            LocalizationEditorMenuStrip.Items.AddRange(new ToolStripItem[] { MenuStripMain, MenuStripOptions });
-            LocalizationEditorMenuStrip.Location = new Point(0, 0);
-            LocalizationEditorMenuStrip.Name = "LocalizationEditorMenuStrip";
-            LocalizationEditorMenuStrip.Size = new Size(800, 24);
-            LocalizationEditorMenuStrip.TabIndex = 0;
-            LocalizationEditorMenuStrip.Text = "menuStrip1";
+            MenuStrip.Items.AddRange(new ToolStripItem[] { MenuStripMain, MenuStripOptions });
+            MenuStrip.Location = new Point(0, 0);
+            MenuStrip.Name = "MenuStrip";
+            MenuStrip.Size = new Size(800, 24);
+            MenuStrip.TabIndex = 0;
+            MenuStrip.Text = "menuStrip1";
             // 
             // MenuStripMain
             // 
@@ -63,7 +63,7 @@
             // MSMainOpenFolder
             // 
             MSMainOpenFolder.Name = "MSMainOpenFolder";
-            MSMainOpenFolder.Size = new Size(139, 22);
+            MSMainOpenFolder.Size = new Size(180, 22);
             MSMainOpenFolder.Text = "Open Folder";
             MSMainOpenFolder.Click += MSMainOpenFolder_Click;
             // 
@@ -71,7 +71,7 @@
             // 
             MSMainSave.Name = "MSMainSave";
             MSMainSave.ShortcutKeyDisplayString = "";
-            MSMainSave.Size = new Size(139, 22);
+            MSMainSave.Size = new Size(180, 22);
             MSMainSave.Text = "Save";
             MSMainSave.Click += MSMainSave_Click;
             // 
@@ -81,6 +81,14 @@
             MenuStripOptions.Name = "MenuStripOptions";
             MenuStripOptions.Size = new Size(61, 20);
             MenuStripOptions.Text = "Options";
+            // 
+            // MSOptionImportLocalization
+            // 
+            MSOptionImportLocalization.Enabled = false;
+            MSOptionImportLocalization.Name = "MSOptionImportLocalization";
+            MSOptionImportLocalization.Size = new Size(194, 22);
+            MSOptionImportLocalization.Text = "Import Localization";
+            MSOptionImportLocalization.Click += MSOptionImportLocalization_Click;
             // 
             // MSOptionBatchCopyLanguage
             // 
@@ -155,14 +163,6 @@
             SelectedLanguageLabel.TabIndex = 6;
             SelectedLanguageLabel.Text = "Selected Language :";
             // 
-            // MSOptionImportLocalization
-            // 
-            MSOptionImportLocalization.Enabled = false;
-            MSOptionImportLocalization.Name = "MSOptionImportLocalization";
-            MSOptionImportLocalization.Size = new Size(194, 22);
-            MSOptionImportLocalization.Text = "Import Localization";
-            MSOptionImportLocalization.Click += MSOptionImportLocalization_Click;
-            // 
             // LocalizationEditor
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -172,12 +172,12 @@
             Controls.Add(DatLanguageComboBox);
             Controls.Add(DatsDataGridView);
             Controls.Add(CmnTreeView);
-            Controls.Add(LocalizationEditorMenuStrip);
-            MainMenuStrip = LocalizationEditorMenuStrip;
+            Controls.Add(MenuStrip);
+            MainMenuStrip = MenuStrip;
             Name = "LocalizationEditor";
             Text = "Localization Editor";
-            LocalizationEditorMenuStrip.ResumeLayout(false);
-            LocalizationEditorMenuStrip.PerformLayout();
+            MenuStrip.ResumeLayout(false);
+            MenuStrip.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)DatsDataGridView).EndInit();
             ResumeLayout(false);
             PerformLayout();
@@ -185,7 +185,7 @@
 
         #endregion
 
-        private MenuStrip LocalizationEditorMenuStrip;
+        private MenuStrip MenuStrip;
         private TreeView CmnTreeView;
         private ToolStripMenuItem LocalizationEditorMenuStripFile;
         private ToolStripMenuItem LEMSMainOpen;
