@@ -33,13 +33,13 @@
             MSMainOpenFolder = new ToolStripMenuItem();
             MSMainSave = new ToolStripMenuItem();
             MenuStripOptions = new ToolStripMenuItem();
+            MSOptionImportLocalization = new ToolStripMenuItem();
             MSOptionBatchCopyLanguage = new ToolStripMenuItem();
             MSOptionsToggleDarkTheme = new ToolStripMenuItem();
             CmnTreeView = new TreeView();
             DatsDataGridView = new DataGridView();
             DatLanguageComboBox = new ComboBox();
             SelectedLanguageLabel = new Label();
-            MSOptionImportLocalization = new ToolStripMenuItem();
             LocalizationEditorMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)DatsDataGridView).BeginInit();
             SuspendLayout();
@@ -81,6 +81,14 @@
             MenuStripOptions.Name = "MenuStripOptions";
             MenuStripOptions.Size = new Size(61, 20);
             MenuStripOptions.Text = "Options";
+            // 
+            // MSOptionImportLocalization
+            // 
+            MSOptionImportLocalization.Enabled = false;
+            MSOptionImportLocalization.Name = "MSOptionImportLocalization";
+            MSOptionImportLocalization.Size = new Size(194, 22);
+            MSOptionImportLocalization.Text = "Import Localization";
+            MSOptionImportLocalization.Click += MSOptionImportLocalization_Click;
             // 
             // MSOptionBatchCopyLanguage
             // 
@@ -132,6 +140,7 @@
             DatsDataGridView.SelectionChanged += DatsDataGridView_SelectionChanged;
             DatsDataGridView.DragDrop += LoadLocalization_DragDrop;
             DatsDataGridView.DragEnter += LoadLocalization_DragEnter;
+            DatsDataGridView.KeyDown += DatsDataGridView_KeyDown;
             DatsDataGridView.MouseDown += DatsDataGridView_MouseDown;
             // 
             // DatLanguageComboBox
@@ -154,14 +163,6 @@
             SelectedLanguageLabel.Size = new Size(112, 15);
             SelectedLanguageLabel.TabIndex = 6;
             SelectedLanguageLabel.Text = "Selected Language :";
-            // 
-            // MSOptionImportLocalization
-            // 
-            MSOptionImportLocalization.Enabled = false;
-            MSOptionImportLocalization.Name = "MSOptionImportLocalization";
-            MSOptionImportLocalization.Size = new Size(194, 22);
-            MSOptionImportLocalization.Text = "Import Localization";
-            MSOptionImportLocalization.Click += MSOptionImportLocalization_Click;
             // 
             // LocalizationEditor
             // 
