@@ -98,10 +98,11 @@ namespace Ace7Ed
         {
             List<int> copyVariableNumbers = new List<int>();
 
+            // Copy variables from selected cells
             foreach (DataGridViewCell selectedCell in DatsDataGridView.SelectedCells)
             {
-                int variableStringNumber = (int)DatsDataGridView.Rows[selectedCell.RowIndex].Cells[0].Value;
-                copyVariableNumbers.Add(variableStringNumber);
+                int variableStringNumber = (int)DatsDataGridView.Rows[selectedCell.RowIndex].Cells[0].Value; // Get the variable string number from the first column
+                copyVariableNumbers.Add(variableStringNumber); // Add the variable string number to the list of variables to copy
             }
             _copyVariableStrings = (_selectedDatIndex, copyVariableNumbers);
         }
@@ -604,10 +605,10 @@ namespace Ace7Ed
 
         private void DatsDataGridView_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.ColumnIndex == 2)
+            if (e.ColumnIndex == 2 && e.RowIndex != -1)
             {
-                string datText = DatsDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString();
-                int stringNumber = Convert.ToInt32(DatsDataGridView.Rows[e.RowIndex].Cells[0].Value);
+                string datText = DatsDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString(); // Get the text of the selected cell
+                int stringNumber = Convert.ToInt32(DatsDataGridView.Rows[e.RowIndex].Cells[0].Value); // Get the variable string number of the text
 
                 using (var datStringEditor = new DatStringEditor(datText) { StartPosition = FormStartPosition.CenterScreen })
                 {
