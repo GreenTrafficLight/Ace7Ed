@@ -284,14 +284,17 @@ namespace Ace7Ed
                 _modifiedLocalization.Item1.Write(cmnFilePath);
             }
 
-            foreach (var dat in _modifiedLocalization.Item2)
+            if (_modifiedLocalization.Item2 != null)
             {
-                string datFilePath = _directory + "\\" + dat.Letter + ".dat";
+                foreach (var dat in _modifiedLocalization.Item2)
+                {
+                    string datFilePath = _directory + "\\" + dat.Letter + ".dat";
 
-                if (File.Exists(datFilePath))
-                    File.Copy(datFilePath, datFilePath + ".bak", true);
+                    if (File.Exists(datFilePath))
+                        File.Copy(datFilePath, datFilePath + ".bak", true);
 
-                dat.Write(datFilePath, dat.Letter);
+                    dat.Write(datFilePath, dat.Letter);
+                }
             }
         }
 
@@ -615,6 +618,7 @@ namespace Ace7Ed
                     datStringEditor.ShowDialog();
                     if (datStringEditor.DialogResult == DialogResult.OK)
                     {
+                        SavedChanges = false;
                         DatsDataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = datStringEditor.DatText;
                         _modifiedLocalization.Item2[_selectedDatIndex].Strings[stringNumber] = datStringEditor.DatText;
                     }
@@ -687,6 +691,8 @@ namespace Ace7Ed
 
                         CmnTreeView.SelectedNode = reInsertTreeNode;
                         CmnTreeView.SelectedNode.Expand();
+
+                        SavedChanges = false;
                     }
                     else
                     {
@@ -824,7 +830,7 @@ namespace Ace7Ed
                 {
                     CopyStrings();
                 }
-                
+
             }
             else if (e.Control && e.KeyCode == Keys.V)
             {
@@ -836,6 +842,15 @@ namespace Ace7Ed
                 {
                     PasteStrings();
                 }
+            }
+        }
+
+        private void LocalizationEditor_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.S && SavedChanges == false)
+            {
+                SaveChanges();
+                SavedChanges = true;
             }
         }
     }

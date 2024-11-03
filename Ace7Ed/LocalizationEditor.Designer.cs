@@ -174,9 +174,11 @@
             Controls.Add(DatsDataGridView);
             Controls.Add(CmnTreeView);
             Controls.Add(LocalizationEditorMenuStrip);
+            KeyPreview = true;
             MainMenuStrip = LocalizationEditorMenuStrip;
             Name = "LocalizationEditor";
             Text = "Localization Editor";
+            KeyDown += LocalizationEditor_KeyDown;
             LocalizationEditorMenuStrip.ResumeLayout(false);
             LocalizationEditorMenuStrip.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)DatsDataGridView).EndInit();

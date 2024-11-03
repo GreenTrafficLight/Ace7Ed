@@ -20,6 +20,7 @@ namespace Ace7Ed
         }
 
         private bool _savedChanges = true;
+
         public DatStringEditor(string datText)
         {
             InitializeComponent();
@@ -74,6 +75,10 @@ namespace Ace7Ed
                 {
                     e.Cancel = true;
                 }
+            }
+            else if (DialogResult == DialogResult.OK)
+            {
+                _savedChanges = true;
             }
         }
     }
