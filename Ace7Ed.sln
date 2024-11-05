@@ -3,11 +3,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34622.214
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ace7Ed", "Ace7Ed\Ace7Ed.csproj", "{346940C6-C28B-46E6-B435-7184524B65FF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ace7Ed", "Ace7Ed\Ace7Ed.csproj", "{346940C6-C28B-46E6-B435-7184524B65FF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{BD889375-DF83-4FE6-AEFC-C304E1E57982} = {BD889375-DF83-4FE6-AEFC-C304E1E57982}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{E70296D2-DEBB-42E3-AAEF-286F09F86397}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ace7LocalizationFormat", "Ace7-Localization-Format\Ace7LocalizationFormat\Ace7LocalizationFormat.csproj", "{5B296A31-55EC-4A71-8915-32A350261E8B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CUE4Parse", "..\AC7Ed\CUE4Parse\CUE4Parse\CUE4Parse.csproj", "{BD889375-DF83-4FE6-AEFC-C304E1E57982}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,12 +28,17 @@ Global
 		{5B296A31-55EC-4A71-8915-32A350261E8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5B296A31-55EC-4A71-8915-32A350261E8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5B296A31-55EC-4A71-8915-32A350261E8B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD889375-DF83-4FE6-AEFC-C304E1E57982}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD889375-DF83-4FE6-AEFC-C304E1E57982}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD889375-DF83-4FE6-AEFC-C304E1E57982}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD889375-DF83-4FE6-AEFC-C304E1E57982}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{5B296A31-55EC-4A71-8915-32A350261E8B} = {E70296D2-DEBB-42E3-AAEF-286F09F86397}
+		{BD889375-DF83-4FE6-AEFC-C304E1E57982} = {E70296D2-DEBB-42E3-AAEF-286F09F86397}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0AECF7B1-57F0-4B80-91D0-EFE65C566DB7}

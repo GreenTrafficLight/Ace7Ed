@@ -9,10 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CUE4Parse" Version="1.1.1" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\..\AC7Ed\CUE4Parse\CUE4Parse\CUE4Parse.csproj" />
     <ProjectReference Include="..\Ace7-Localization-Format\Ace7LocalizationFormat\Ace7LocalizationFormat.csproj" />
   </ItemGroup>
 
